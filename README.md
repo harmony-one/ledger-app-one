@@ -1,5 +1,5 @@
 # ledger-app-one
-Ledger hardware wallet 
+Ledger hardware wallet, document is shown [here](https://docs.google.com/document/d/1_xJ8Lkok_6UMcE3ah1eigfZOBD4cMVQ3eMQZprBiPtE/edit). 
 
 
 
