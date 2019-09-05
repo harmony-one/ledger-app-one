@@ -6,7 +6,7 @@
 #include "bech32.h"
 
 
-void deriveSiaKeypair(cx_ecfp_private_key_t *privateKey, cx_ecfp_public_key_t *publicKey) {
+void deriveOneKeypair(cx_ecfp_private_key_t *privateKey, cx_ecfp_public_key_t *publicKey) {
 	uint8_t keySeed[32];
 	cx_ecfp_private_key_t pk;
 
@@ -55,7 +55,7 @@ void deriveAndSign(uint8_t *dst, const uint8_t *hash) {
 	cx_ecfp_private_key_t privateKey;
 
 	//generate private key
-	deriveSiaKeypair(&privateKey, NULL);
+	deriveOneKeypair(&privateKey, NULL);
 
     //uint8_t data[32] = {1};
     cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, hash, 32, tlv_sig, sizeof(tlv_sig),  &info);

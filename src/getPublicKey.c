@@ -82,8 +82,7 @@ static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, uns
 		// buffer. Even though we know that tx starts at 0, it's best to
 		// always add it explicitly; this prevents a bug if we reorder the
 		// statements later.
-        deriveSiaKeypair(NULL, &publicKey);
-
+		deriveOneKeypair(NULL, &publicKey);
 
 		pubkeyToOneAddress(G_io_apdu_buffer + tx, &publicKey);
 		tx += 42;
