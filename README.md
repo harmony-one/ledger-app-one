@@ -1,6 +1,8 @@
 # ledger-app-one 
 Ledger hardware wallet support for Harmony ONE.  
-This repository contains software and firmware source code for Harmony hardware wallet using Ledger Nano S.
+This repository contains software and firmware source code for Harmony hardware wallet using Ledger Nano S.  
+An example of Ledger Nano S running Harmony ONE app (LED UI) and companion app manual can be found  [here](https://docs.harmony.one/sdk-wiki/wallet-developers-guide/ledger).  
+
  
 
 ## Code List
