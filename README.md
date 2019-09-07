@@ -15,7 +15,7 @@ This repository contains software and firmware source code for Harmony hardware 
 ## Build Environment
 
 ### Docker toolchain image
-In order to make compiling as eas as possible you can make use of a docker image containing all the necessary compilers and the [nanos-secure-sdk](https://github.com/LedgerHQ/nanos-secure-sdk).
+In order to make compiling as early as possible you can make use of a docker image containing all the necessary compilers and the [nanos-secure-sdk](https://github.com/LedgerHQ/nanos-secure-sdk).
 
 Make sure you have [Docker](https://www.docker.com/community-edition) installed.
 

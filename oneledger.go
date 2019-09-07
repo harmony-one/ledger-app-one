@@ -296,7 +296,6 @@ const (
 
 Actions:
     addr            get address of the wallet
-    signhash        sign a trusted hash
     signtx          sign a transaction
 `
 	debugUsage = `print raw APDU exchanges`
@@ -393,45 +392,6 @@ func main() {
 
 	case signHashCmd:
 	    fmt.Println("Sign hash is disabled in ledger firmware, please use signtx instead.")
-	/*
-		if len(args) != 1 {
-			signHashCmd.Usage()
-			return
-		}
-		var hash [32]byte
-		hashBytes, err := hex.DecodeString(args[0])
-		if err != nil {
-			log.Fatalln("Couldn't read hash:", err)
-		} else if len(hashBytes) != 32 {
-			log.Fatalf("Wrong hex hash length (%v, wanted 32)", len(hashBytes))
-		}
-		copy(hash[:], hashBytes)
-
-		sig, err := nanos.SignHash(hash)
-		if err != nil {
-			log.Fatalln("Couldn't get signature:", err)
-		}
-
-		fmt.Println("signature:")
-		fmt.Println(hex.EncodeToString(sig[:]))
-		fmt.Println("hash:")
-		fmt.Println(hex.EncodeToString(hashBytes[:]))
-
-
-		pubkey, err := crypto.Ecrecover(hashBytes[:], sig[:])
-		if err != nil {
-        	log.Fatalln("Ecrecover failed :", err)
-        }
-
-        if len(pubkey) == 0 || pubkey[0] != 4 {
-        	log.Fatalln("invalid public key")
-        }
-
-        //fmt.Println("signed with pubkey: " + hex.EncodeToString(pubkey[:65]))
-        pubBytes := crypto.Keccak256(pubkey[1:65])[12:]
-        oneAddr, _ := ConvertAndEncode("one", pubBytes)
-        fmt.Println("signed with address: " + oneAddr)
-    */
 
 	case signTxCmd:
 		if (len(args) != 1) {
