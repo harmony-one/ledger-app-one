@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b788f50c-73bd-42ed-adf3-60c2a538173e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../src/getPublicKey.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/getPublicKey.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/harmony.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/harmony.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/harmony.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/harmony.h" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/nano_S_driver.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1146">
+              <caret line="189" column="16" selection-start-line="189" selection-start-column="16" selection-end-line="189" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>p2p</find>
+      <find>address</find>
+      <find>address.</find>
+      <find>AccountState</find>
+      <find>clientService</find>
+      <find>use</find>
+      <find>bech32_get_address</find>
+      <find>contractCreation</find>
+      <find>rand</find>
+      <find>SignTxn</find>
+      <find>ConvertAndEncode</find>
+      <find>WalletProfile</find>
+      <find>getNextNonce</find>
+    </findStrings>
+  </component>
+  <component name="GOROOT" path="/usr/local/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/configfile.go" />
+        <option value="$PROJECT_DIR$/usb.go" />
+        <option value="$PROJECT_DIR$/nano_S_driver.go" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.go" />
+        <option value="$PROJECT_DIR$/hw_wallet.go" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="511" />
+    <option name="y" value="87" />
+    <option name="width" value="2257" />
+    <option name="height" value="1360" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="wallet" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wallet" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wallet" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.gopath.indexing.explicitly.defined" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../cottontail_ledger-app-one/wallet" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Go Build.go ledger">
+    <configuration name="go build hw_wallet" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="wallet" />
+      <working_directory value="$PROJECT_DIR$/" />
+      <go_parameters value="-i" />
+      <parameters value="-p cm balance" />
+      <sudo value="true" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/hw_wallet.go|$PROJECT_DIR$/configfile.go|$PROJECT_DIR$/generated_wallet.ini.go|$PROJECT_DIR$/usb.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go ledger" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
+      <module name="wallet" />
+      <working_directory value="$PROJECT_DIR$" />
+      <parameters value="-p cm transfer --from one1q6gkzcap0uruuu8r6sldxuu47pd4ww9w9t7tg6 --to one1pjq82a97vfxvmlm60htyc7kafhyjm59f7wgz22 --amount=1 --shardID=1 --toShardID=0" />
+      <sudo value="true" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/hw_wallet.go|$PROJECT_DIR$/nano_S_driver.go|$PROJECT_DIR$/configfile.go|$PROJECT_DIR$/generated_wallet.ini.go" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build hw_wallet" />
+      <item itemvalue="Go Build.go ledger" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go ledger" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="511" y="87" width="2257" height="1360" extended-state="0" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20805065" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.54010963" visible="true" weight="0.22908205" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.39965498" weight="0.2575142" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="8" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.4598904" side_tool="true" weight="0.34606013" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$USER_HOME$/go/src/github.com/ethereum/go-ethereum/core/state_transition.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="426">
+          <caret line="85" column="5" selection-start-line="85" selection-start-column="5" selection-end-line="85" selection-end-column="5" />
+          <folding>
+            <element signature="e#807#1014#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hw_wallet.go" />
+    <entry file="file://$PROJECT_DIR$/generated_wallet.ini.go" />
+    <entry file="file://$PROJECT_DIR$/configfile.go" />
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1110">
+          <caret line="92" column="16" lean-forward="true" selection-start-line="92" selection-start-column="16" selection-end-line="92" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nano_S_driver.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1146">
+          <caret line="189" column="16" selection-start-line="189" selection-start-column="16" selection-end-line="189" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
