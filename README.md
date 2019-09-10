@@ -79,3 +79,7 @@ To get out of your Python virtualenv again after everything is done.
 deactivate
 ```
 
+## Build host companion app
+```
+go build oneledger.go
+```
