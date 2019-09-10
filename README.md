@@ -22,7 +22,6 @@ In order to make compiling as early as possible you can make use of a docker ima
 Make sure you have [Docker](https://www.docker.com/community-edition) installed.
 
 #### Step 1 - Build the image:
-> make sure to select the appropriate $BOLOS_SDK in Dockerfile
 ```bash
 docker build -t ledger-chain:latest .
 ```
