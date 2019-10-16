@@ -66,5 +66,6 @@ bool tostring128(uint128_t *number, uint32_t base, char *out,
                  uint32_t outLength);
 bool tostring256(uint256_t *number, uint32_t base, char *out,
                  uint32_t outLength, uint32_t *realLength);
+void convertU256ToString(uint8_t *buffer, char *output, uint32_t  *outLength);
 
 #endif /* _UINT256_H_ */

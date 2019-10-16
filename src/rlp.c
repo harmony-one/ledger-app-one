@@ -55,7 +55,8 @@ static void processContent(txContext_t *context) {
         THROW(EXCEPTION);
     }
     context->dataLength = context->currentFieldLength;
-    context->currentField++;
+    context->txCurrentField++;
+    context->stakeCurrentField++;
     context->processingField = false;
 }
 
@@ -92,18 +93,57 @@ static void processNonce(txContext_t *context) {
         copyTxData(context, NULL, copySize);
     }
     if (context->currentFieldPos == context->currentFieldLength) {
-        context->currentField++;
+        context->txCurrentField++;
+        context->stakeCurrentField++;
         context->processingField = false;
     }
 }
 
-static void processStartGas(txContext_t *context) {
+static void processDirective(txContext_t *context) {
     if (context->currentFieldIsList) {
-        PRINTF("Invalid type for RLP_STARTGAS\n");
+        PRINTF("Invalid type for STAKING DIRECTIVE \n");
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldLength > 4) {
+        PRINTF("Invalid length for STAKING DIRECTIVE %d\n",
+               context->currentFieldLength);
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldPos < context->currentFieldLength) {
+        uint32_t copySize =
+                (context->commandLength <
+                 ((context->currentFieldLength - context->currentFieldPos))
+                 ? context->commandLength
+                 : context->currentFieldLength - context->currentFieldPos);
+        copyTxData(context,
+                   (uint8_t *)&context->content->directive + context->currentFieldPos,
+                   copySize);
+    }
+    if (context->currentFieldPos == context->currentFieldLength) {
+        context->content->destinationLength = context->currentFieldLength;
+        context->stakeCurrentField++;
+        context->processingField = false;
+    }
+}
+
+static void processStakingMessage(txContext_t *context) {
+    if (! context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP STAKING MESSAGE \n");
+        THROW(EXCEPTION);
+    }
+
+    context->stakeCurrentField++;
+    context->processingField = false;
+}
+
+
+static void processGasLimit(txContext_t *context) {
+    if (context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP_GASLIMIT\n");
         THROW(EXCEPTION);
     }
     if (context->currentFieldLength > MAX_INT256) {
-        PRINTF("Invalid length for RLP_STARTGAS %d\n",
+        PRINTF("Invalid length for RLP_GASLIMIT %d\n",
                context->currentFieldLength);
         THROW(EXCEPTION);
     }
@@ -119,7 +159,8 @@ static void processStartGas(txContext_t *context) {
     }
     if (context->currentFieldPos == context->currentFieldLength) {
         context->content->startgas.length = context->currentFieldLength;
-        context->currentField++;
+        context->txCurrentField++;
+        context->stakeCurrentField++;
         context->processingField = false;
     }
 }
@@ -145,7 +186,8 @@ static void processGasprice(txContext_t *context) {
     }
     if (context->currentFieldPos == context->currentFieldLength) {
         context->content->gasprice.length = context->currentFieldLength;
-        context->currentField++;
+        context->txCurrentField++;
+        context->stakeCurrentField++;
         context->processingField = false;
     }
 }
@@ -244,12 +286,13 @@ static void processValue(txContext_t *context) {
     }
     if (context->currentFieldPos == context->currentFieldLength) {
         context->content->value.length = context->currentFieldLength;
-        context->currentField++;
+        context->txCurrentField++;
+        context->stakeCurrentField++;
         context->processingField = false;
     }
 }
 
-static void processFromShard(txContext_t *context) {
+static void processShard(txContext_t *context, uint8_t *shard) {
     if (context->currentFieldIsList) {
         PRINTF("Invalid type for FROM SHARD \n");
         THROW(EXCEPTION);
@@ -266,7 +309,7 @@ static void processFromShard(txContext_t *context) {
                  ? context->commandLength
                  : context->currentFieldLength - context->currentFieldPos);
         copyTxData(context,
-                   (uint8_t *)&context->content->fromShard + context->currentFieldPos,
+                   shard + context->currentFieldPos,
                    copySize);
 
         //adjust from big endian to little endian
@@ -280,54 +323,19 @@ static void processFromShard(txContext_t *context) {
     }
     if (context->currentFieldPos == context->currentFieldLength) {
         context->content->destinationLength = context->currentFieldLength;
-        context->currentField++;
+        context->txCurrentField++;
         context->processingField = false;
     }
 }
 
-static void processToShard(txContext_t *context) {
-    if (context->currentFieldIsList) {
-        PRINTF("Invalid type for TO SHARD \n");
-        THROW(EXCEPTION);
-    }
-    if (context->currentFieldLength > MAX_INT32) {
-        PRINTF("Invalid length for TO SHARD %d\n",
-               context->currentFieldLength);
-        THROW(EXCEPTION);
-    }
-    if (context->currentFieldPos < context->currentFieldLength) {
-        uint32_t copySize =
-                (context->commandLength <
-                 ((context->currentFieldLength - context->currentFieldPos))
-                 ? context->commandLength
-                 : context->currentFieldLength - context->currentFieldPos);
-        copyTxData(context,
-                   (uint8_t *)&context->content->toShard + context->currentFieldPos,
-                   copySize);
 
-        //adjust from big endian to little endian
-        uint32_t shardId = 0;
-        uint8_t *shardIdArray = (uint8_t *) &context->content->toShard;
-        for(uint32_t i = 0 ; i < context->currentFieldLength;  i++ ) {
-            shardId <<= 8;
-            shardId |= shardIdArray[i];
-        }
-        context->content->toShard = shardId;
-    }
-    if (context->currentFieldPos == context->currentFieldLength) {
-        context->content->destinationLength = context->currentFieldLength;
-        context->currentField++;
-        context->processingField = false;
-    }
-}
-
-static void processTo(txContext_t *context) {
+static void processAddress(txContext_t *context, uint8_t *address) {
     if (context->currentFieldIsList) {
-        PRINTF("Invalid type for RLP_TO\n");
+        PRINTF("Invalid type for RLP_ADDRESS\n");
         THROW(EXCEPTION);
     }
     if (context->currentFieldLength > MAX_ADDRESS) {
-        PRINTF("Invalid length for RLP_TO\n");
+        PRINTF("Invalid length for RLP ADDRESS\n");
         THROW(EXCEPTION);
     }
     if (context->currentFieldPos < context->currentFieldLength) {
@@ -337,20 +345,20 @@ static void processTo(txContext_t *context) {
                  ? context->commandLength
                  : context->currentFieldLength - context->currentFieldPos);
         copyTxData(context,
-                   context->content->destination + context->currentFieldPos,
+                   address + context->currentFieldPos,
                    copySize);
     }
     if (context->currentFieldPos == context->currentFieldLength) {
         context->content->destinationLength = context->currentFieldLength;
-        context->currentField++;
+        context->txCurrentField++;
+        context->stakeCurrentField++;
         context->processingField = false;
     }
 }
 
-
 int processTx(txContext_t *context) {
     for (;;) {
-        if (context->currentField == TX_RLP_DONE) {
+        if (context->txCurrentField == TX_RLP_DONE) {
             return 0;
         }
 
@@ -407,7 +415,7 @@ int processTx(txContext_t *context) {
         }
 
 
-        switch (context->currentField) {
+        switch (context->txCurrentField) {
             case TX_RLP_CONTENT:
                 processContent(context);
                 break;
@@ -417,21 +425,118 @@ int processTx(txContext_t *context) {
             case TX_RLP_GASPRICE:
                 processGasprice(context);
                 break;
-            case TX_RLP_STARTGAS:
-                processStartGas(context);
+            case TX_RLP_GASLIMIT:
+                processGasLimit(context);
                 break;
             case TX_RLP_FROMSHARD:
-                processFromShard(context);
+                processShard(context, (uint8_t *)&context->content->fromShard);
                 break;
             case TX_RLP_TOSHARD:
-                processToShard(context);
+               processShard(context, (uint8_t *)&context->content->toShard);
                 break;
             case TX_RLP_TO:
-                processTo(context);
+                processAddress(context, context->content->destination);
                 break;
             case TX_RLP_AMOUNT:
                 processValue(context);
                 return 0;
+            default:
+                return -1;
+        }
+    }
+}
+
+int processStaking(struct txContext_t *context) {
+    for (;;) {
+        if (context->stakeCurrentField == STAKE_RLP_DONE) {
+            return 0;
+        }
+
+        if (context->commandLength == 0) {
+            return 1;
+        }
+
+        if (!context->processingField) {
+            bool canDecode = false;
+            uint32_t offset;
+            while (context->commandLength != 0) {
+                bool valid;
+                // Feed the RLP buffer until the length can be decoded
+                if (context->commandLength < 1) {
+                    return -1;
+                }
+                context->rlpBuffer[context->rlpBufferPos++] =
+                        readTxByte(context);
+                if (rlpCanDecode(context->rlpBuffer, context->rlpBufferPos,
+                                 &valid)) {
+                    // Can decode now, if valid
+                    if (!valid) {
+                        return -1;
+                    }
+                    canDecode = true;
+                    break;
+                }
+                // Cannot decode yet
+                // Sanity check
+                if (context->rlpBufferPos == sizeof(context->rlpBuffer)) {
+                    return -1;
+                }
+            }
+            if (!canDecode) {
+                return 1;
+            }
+            // Ready to process this field
+            if (!rlpDecodeLength(context->rlpBuffer, context->rlpBufferPos,
+                                 &context->currentFieldLength, &offset,
+                                 &context->currentFieldIsList)) {
+                return -1;
+            }
+            if (offset == 0) {
+                // Hack for single byte, self encoded
+                context->workBuffer--;
+                context->commandLength++;
+                context->fieldSingleByte = true;
+            } else {
+                context->fieldSingleByte = false;
+            }
+            context->currentFieldPos = 0;
+            context->rlpBufferPos = 0;
+            context->processingField = true;
+        }
+
+
+        switch (context->stakeCurrentField) {
+            case STAKE_RLP_CONTENT:
+                processContent(context);
+                break;
+            case STAKE_RLP_DIRECTIVE:
+                processDirective(context);
+                break;
+            case STAKE_RLP_STAKEMESSAGE:
+                processStakingMessage(context);
+                break;
+            case STAKE_RLP_DELEGATORADDR:
+                processAddress(context, context->content->destination);
+                break;
+            case STAKE_RLP_VALIDATORADDR:
+                processAddress(context, context->content->validatorAddress);
+                if ((context->content->directive == DirectiveDelegate)
+                    || (context->content->directive == DirectiveUndelegate)) {
+                    context->stakeCurrentField = STAKE_RLP_AMOUNT;
+                }
+                else if (context->content->directive == DirectiveRedelegate) {
+                    context->stakeCurrentField = STAKE_RLP_VALIDATORDESTADDR;
+                }
+                break;
+            case STAKE_RLP_VALIDATORDESTADDR:
+                processAddress(context, context->content->validatorDstAddress);
+                break;
+            case STAKE_RLP_AMOUNT:
+                processValue(context);
+                break;
+            case STAKE_RLP_NONCE:
+                context->stakeCurrentField = STAKE_RLP_DONE;
+                break;
             default:
                 return -1;
         }
