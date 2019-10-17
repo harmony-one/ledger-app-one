@@ -48,12 +48,31 @@ typedef struct {
 } signHashContext_t;
 
 typedef struct {
-	uint8_t displayIndex;
+    uint8_t displayIndex;
     uint8_t buf[510]; // holds RLP encoded tx bytes; large enough for two 0xFF reads
     uint16_t length;  // holds RLP encoded tx length
     txContext_t txContext;
     txContent_t txContent;
-	// NUL-terminated strings for display
+    // NUL-terminated strings for display
+    uint8_t  toAddr[42];
+    uint8_t partialAddrStr[13];
+    //largest 256 bit unsigned integer is 115792089237316195423570985008687907853269984665640564039457584007913129639935
+    uint8_t amountStr[78];
+    uint32_t amountLength;
+    uint8_t partialAmountStr[13];
+    uint8_t hash[32];
+    uint8_t fullStr[128]; // variable length
+    uint8_t typeStr[40]; // variable-length
+    bool initialized; // protects against certain attacks
+} signStakingContext_t;
+
+typedef struct {
+    uint8_t displayIndex;
+    uint8_t buf[510]; // holds RLP encoded tx bytes; large enough for two 0xFF reads
+    uint16_t length;  // holds RLP encoded tx length
+    txContext_t txContext;
+    txContent_t txContent;
+    // NUL-terminated strings for display
     uint8_t  toAddr[42];
     uint8_t partialAddrStr[13];
     //largest 256 bit unsigned integer is 115792089237316195423570985008687907853269984665640564039457584007913129639935
@@ -63,17 +82,18 @@ typedef struct {
     uint8_t fromShardStr[13];
     uint8_t toShardStr[13];
     uint8_t hash[32];
-	uint8_t fullStr[128]; // variable length
+    uint8_t fullStr[128]; // variable length
     uint8_t typeStr[40]; // variable-length
-	bool initialized; // protects against certain attacks
+    bool initialized; // protects against certain attacks
 } signTxnContext_t;
 
 // To save memory, we store all the context types in a single global union,
 // taking advantage of the fact that only one command is executed at a time.
 typedef union {
 	getPublicKeyContext_t getPublicKeyContext;
-	signHashContext_t signHashContext;
-    signTxnContext_t signTxnContext;
+	signHashContext_t     signHashContext;
+    signTxnContext_t      signTxnContext;
+    signStakingContext_t  signStakingContext;
 } commandContext;
 extern commandContext global;
 

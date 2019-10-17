@@ -184,7 +184,7 @@ func (n *NanoS) Exchange(cmd byte, p1, p2 byte, data []byte) (resp []byte, err e
 const (
 	cmdGetVersion   = 0x01
 	cmdGetPublicKey = 0x02
-	cmdSignHash     = 0x04
+	cmdSignStake    = 0x04
 	cmdSignTx       = 0x08
 
 	p1More  = 0x80
@@ -217,19 +217,21 @@ func (n *NanoS) GetAddress() (oneAddr string, err error) {
 	return string(pubkey[:]), nil
 }
 
-func (n *NanoS) SignHash(hash [32]byte) (sig [65]byte, err error) {
-	resp, err := n.Exchange(cmdSignHash, 0, 0, hash[:])
+func (n *NanoS) SignStake(stake []byte) (sig [65]byte, err error) {
+	var resp []byte
+
+	var p1 byte = p1More
+	resp, err = n.Exchange(cmdSignStake, p1, p2SignHash, stake)
 	if err != nil {
-		return [65]byte{}, err
+	    return [65]byte{}, err
 	}
+
+	copy(sig[:], resp)
 
 	if copy(sig[:], resp) != len(sig) {
 		return [65]byte{}, errors.New("signature has wrong length")
 	}
-
-
-	//crypto.Sign(hash[:],
-	return sig, nil
+	return
 }
 
 func (n *NanoS) SignTxn(txn []byte) (sig [65]byte, err error) {
@@ -311,8 +313,8 @@ the one Ledger Nano S app (if available).
 
 Generates the ONE address of the wallet.
 `
-	hashUsage = `Usage:
-	oneledger signhash [hex-encoded hash]
+	stakeUsage = `Usage:
+	oneledger signstake [rlp-encoded staking transaction]
 
 Signs a 256-bit hash using the private key. The hash
 must be hex-encoded.
@@ -335,7 +337,7 @@ func main() {
 
 	versionCmd := flagg.New("version", versionUsage)
 	addrCmd := flagg.New("addr", addrUsage)
-	signHashCmd := flagg.New("signhash", hashUsage)
+	signStakeCmd:= flagg.New("signstake", stakeUsage)
 	signTxCmd := flagg.New("signtx", txnUsage)
 
 	cmd := flagg.Parse(flagg.Tree{
@@ -343,7 +345,7 @@ func main() {
 		Sub: []flagg.Tree{
 			{Cmd: versionCmd},
 			{Cmd: addrCmd},
-			{Cmd: signHashCmd},
+			{Cmd: signStakeCmd},
 			{Cmd: signTxCmd},
 		},
 	})
@@ -390,8 +392,51 @@ func main() {
         }
 		fmt.Println(oneAddr)
 
-	case signHashCmd:
-	    fmt.Println("Sign hash is disabled in ledger firmware, please use signtx instead.")
+	case signStakeCmd:
+		if (len(args) != 1) {
+			signStakeCmd.Usage()
+			return
+		}
+
+		stakeBytes, err := hex.DecodeString(args[0])
+		if err != nil {
+			log.Fatalln("Couldn't read transaction:", err)
+		}
+
+        sig, err := nanos.SignStake(stakeBytes)
+
+        if err != nil {
+            log.Fatalln("Couldn't get signature:", err)
+        }
+
+		if err != nil {
+			log.Fatalln("Couldn't get signature:", err)
+		}
+
+        var hash [32]byte
+        hw := sha3.NewLegacyKeccak256()
+        hw.Write(stakeBytes[:])
+        hw.Sum(hash[:0])
+
+		fmt.Println("signature:")
+		fmt.Println(hex.EncodeToString(sig[:]))
+		fmt.Println("hash:")
+		fmt.Println(hex.EncodeToString(hash[:]))
+
+
+		pubkey, err := crypto.Ecrecover(hash[:], sig[:])
+		if err != nil {
+        	log.Fatalln("Ecrecover failed :", err)
+        }
+
+        if len(pubkey) == 0 || pubkey[0] != 4 {
+        	log.Fatalln("invalid public key")
+        }
+
+        //fmt.Println("signed with pubkey: " + hex.EncodeToString(pubkey[:65]))
+        pubBytes := crypto.Keccak256(pubkey[1:65])[12:]
+        oneAddr, _ := ConvertAndEncode("one", pubBytes)
+        fmt.Println("signed with address: " + oneAddr)
 
 	case signTxCmd:
 		if (len(args) != 1) {

@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <os.h>
 #include "uint256.h"
 
 static const char HEXDIGITS[] = "0123456789abcdef";
@@ -544,4 +544,33 @@ bool tostring256(uint256_t *number, uint32_t baseParam, char *out,
     reverseString(out, offset);
     *realLength = offset;
     return true;
+}
+
+void convertU256ToString(uint8_t *buffer, char *output, uint32_t  *outLength) {
+    uint256_t target;
+    uint256_t amount;
+    uint256_t nanoAmount;
+    uint256_t rMod;
+    uint256_t nano;
+
+    clear256(&target);
+    clear256(&amount);
+    clear256(&nanoAmount);
+    clear256(&rMod);
+    clear256(&nano);
+
+    readu256BE(buffer, &target);
+
+    UPPER(LOWER(nano)) = 0;
+    LOWER(LOWER(nano)) = 1000000000;
+
+    //convert to nano
+    divmod256(&target, &nano, &nanoAmount, &rMod);
+
+    //convert to one
+    divmod256(&nanoAmount, &nano, &amount, &rMod);
+
+    //78 is the maximum u256 length
+    os_memset(output, 0, 78);
+    tostring256(&amount, 10, output, 78, outLength);
 }
