@@ -32,6 +32,12 @@ SOFTWARE.
 
 static signStakingContext_t *ctx = &global.signStakingContext;
 
+static void sign_staking_tx() {
+    cx_sha3_t sha3;
+    cx_keccak_init(&sha3, 256);
+    cx_hash((cx_hash_t *)&sha3, CX_LAST, ctx->buf, ctx->length, ctx->hash, 32);
+    deriveAndSign(G_io_apdu_buffer, ctx->hash);
+}
 
 static const bagl_element_t ui_amount_compare_large[] = {
         UI_BACKGROUND(),
@@ -42,8 +48,6 @@ static const bagl_element_t ui_amount_compare_large[] = {
         UI_TEXT(0x00, 0, 12, 128, "Amount:"),
         UI_TEXT(0x00, 0, 26, 128, global.signTxnContext.partialAmountStr),
 };
-
-
 
 static const bagl_element_t* ui_prepro_amount_compare(const bagl_element_t *element) {
     switch (element->component.userid) {
@@ -59,8 +63,6 @@ static const bagl_element_t* ui_prepro_amount_compare(const bagl_element_t *elem
 // This is the button handler for the comparison screen. Unlike the approval
 // button handler, this handler doesn't send any data to the computer.
 static unsigned int ui_amount_compare_large_button(unsigned int button_mask, unsigned int button_mask_counter) {
-    cx_sha3_t sha3;
-
     switch (button_mask) {
         case BUTTON_LEFT:
         case BUTTON_EVT_FAST | BUTTON_LEFT: // SEEK LEFT
@@ -93,10 +95,7 @@ static unsigned int ui_amount_compare_large_button(unsigned int button_mask, uns
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            cx_keccak_init(&sha3, 256);
-            cx_hash((cx_hash_t *)&sha3, CX_LAST, ctx->buf, ctx->length, ctx->hash, 32);
-
-            deriveAndSign(G_io_apdu_buffer, ctx->hash);
+            sign_staking_tx();
             io_exchange_with_code(SW_OK, 65);
 
             // Return to the main screen.
@@ -119,8 +118,6 @@ static const bagl_element_t ui_amount_compare[] = {
 };
 
 static unsigned int ui_amount_compare_button(unsigned int button_mask, unsigned int button_mask_counter) {
-    cx_sha3_t sha3;
-
     switch (button_mask) {
         case BUTTON_EVT_RELEASED | BUTTON_LEFT: // REJECT
             io_exchange_with_code(SW_USER_REJECTED, 0);
@@ -129,10 +126,7 @@ static unsigned int ui_amount_compare_button(unsigned int button_mask, unsigned 
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
-            cx_keccak_init(&sha3, 256);
-            cx_hash((cx_hash_t *)&sha3, CX_LAST, ctx->buf, ctx->length, ctx->hash, 32);
-
-            deriveAndSign(G_io_apdu_buffer, ctx->hash);
+            sign_staking_tx();
             io_exchange_with_code(SW_OK, 65);
 
             // Return to the main screen.
@@ -189,19 +183,28 @@ static unsigned int ui_validator_address_compare_button(unsigned int button_mask
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            os_memset(numberBuf, 0, 32);
-            os_memcpy(&numberBuf[32- ctx->txContent.value.length], ctx->txContent.value.value, ctx->txContent.value.length);
-            convertU256ToString(numberBuf, (char *)ctx->amountStr,  &ctx->amountLength);
-            ctx->displayIndex = 0;
-            if (ctx->amountLength > 12) {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr, 12);
-                ctx->partialAmountStr[12] = 0;
-                UX_DISPLAY(ui_amount_compare_large, ui_prepro_amount_compare);
-            }
-            else {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr, ctx->amountLength);
-                ctx->partialAmountStr[ctx->amountLength] = 0;
-                UX_DISPLAY(ui_amount_compare, NULL);
+            if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
+                 (ctx->txContent.directive == DirectiveEditValidator) ) {
+                sign_staking_tx();
+                io_exchange_with_code(SW_OK, 65);
+
+                // Return to the main screen.
+                ui_idle();
+            } else {
+                os_memset(numberBuf, 0, 32);
+                os_memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
+                          ctx->txContent.value.length);
+                convertU256ToString(numberBuf, (char *) ctx->amountStr, &ctx->amountLength);
+                ctx->displayIndex = 0;
+                if (ctx->amountLength > 12) {
+                    os_memmove(ctx->partialAmountStr, ctx->amountStr, 12);
+                    ctx->partialAmountStr[12] = 0;
+                    UX_DISPLAY(ui_amount_compare_large, ui_prepro_amount_compare);
+                } else {
+                    os_memmove(ctx->partialAmountStr, ctx->amountStr, ctx->amountLength);
+                    ctx->partialAmountStr[ctx->amountLength] = 0;
+                    UX_DISPLAY(ui_amount_compare, NULL);
+                }
             }
 
             break;
@@ -256,11 +259,19 @@ static unsigned int ui_delegator_address_compare_button(unsigned int button_mask
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            bech32_get_address((char *)ctx->toAddr, ctx->txContent.validatorAddress, 20);
-            os_memmove(ctx->partialAddrStr, ctx->toAddr, 12);
-            ctx->partialAddrStr[12] = '\0';
-            ctx->displayIndex = 0;
-            UX_DISPLAY(ui_validator_address_compare, ui_prepro_validator_address_compare);
+            if (ctx->txContent.directive == DirectiveCollectRewards) {
+                sign_staking_tx();
+                io_exchange_with_code(SW_OK, 65);
+
+                // Return to the main screen.
+                ui_idle();
+            } else {
+                bech32_get_address((char *) ctx->toAddr, ctx->txContent.validatorAddress, 20);
+                os_memmove(ctx->partialAddrStr, ctx->toAddr, 12);
+                ctx->partialAddrStr[12] = '\0';
+                ctx->displayIndex = 0;
+                UX_DISPLAY(ui_validator_address_compare, ui_prepro_validator_address_compare);
+            }
             break;
     }
     // (The return value of a button handler is irrelevant; it is never
@@ -284,11 +295,20 @@ static unsigned int ui_signStaking_approve_button(unsigned int button_mask, unsi
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
-            bech32_get_address((char *)ctx->toAddr, ctx->txContent.destination, 20);
-            os_memmove(ctx->partialAddrStr, ctx->toAddr, 12);
-            ctx->partialAddrStr[12] = '\0';
-            ctx->displayIndex = 0;
-            UX_DISPLAY(ui_delegator_address_compare, ui_prepro_delegator_address_compare);
+            if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
+                 (ctx->txContent.directive == DirectiveEditValidator) ) {
+                bech32_get_address((char *)ctx->toAddr, ctx->txContent.validatorAddress, 20);
+                os_memmove(ctx->partialAddrStr, ctx->toAddr, 12);
+                ctx->partialAddrStr[12] = '\0';
+                ctx->displayIndex = 0;
+                UX_DISPLAY(ui_validator_address_compare, ui_prepro_validator_address_compare);
+            } else {
+                bech32_get_address((char *) ctx->toAddr, ctx->txContent.destination, 20);
+                os_memmove(ctx->partialAddrStr, ctx->toAddr, 12);
+                ctx->partialAddrStr[12] = '\0';
+                ctx->displayIndex = 0;
+                UX_DISPLAY(ui_delegator_address_compare, ui_prepro_delegator_address_compare);
+            }
             break;
     }
     return 0;
@@ -311,14 +331,20 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
         THROW(INVALID_PARAMETER);
     }
 
-    if (ctx->txContent.directive == DirectiveDelegate) {
-        os_memmove(ctx->typeStr, "Sign Delegate?", 19);
+    if (ctx->txContent.directive == DirectiveCreateValidator) {
+        os_memmove(ctx->typeStr, "Create Validator?", 18);
     }
-    else if (ctx->txContent.directive == DirectiveRedelegate) {
-        os_memmove(ctx->typeStr, "Sign Redelegate?", 21);
+    else if (ctx->txContent.directive == DirectiveEditValidator) {
+        os_memmove(ctx->typeStr, "Edit Validator?", 16);
+    }
+    else if (ctx->txContent.directive == DirectiveDelegate) {
+        os_memmove(ctx->typeStr, "Sign Delegate?", 15);
     }
     else if (ctx->txContent.directive == DirectiveUndelegate) {
-        os_memmove(ctx->typeStr, "Sign Undelegate?", 21);
+        os_memmove(ctx->typeStr, "Sign Undelegate?", 17);
+    }
+    else if (ctx->txContent.directive == DirectiveCollectRewards) {
+        os_memmove(ctx->typeStr, "Collect Rewards?", 17);
     }
     else {
         THROW(INVALID_PARAMETER);
