@@ -11,11 +11,7 @@
 #define MAX_INT32  4
 
 //max length of staking validator description fields
-#define MAX_NAME_LEN            30
-#define MAX_IDENTITY_LEN        30
-#define MAX_WEBSITE_LEN         20
-#define MAX_SECURITYCONTACT_LEN 20
-#define MAX_DETAIL_LEN          20
+#define MAX_NAME_LEN            70
 #define MAX_BLS_PUB_KEYS        4
 
 typedef enum rlpTxField_e {
@@ -95,11 +91,7 @@ typedef struct txContent_t {
     uint32_t   blsPubKeySize;
     uint8_t    slotKeyToRemove[MAX_BLS_ADDRESS];
     uint8_t    slotKeyToAdd[MAX_BLS_ADDRESS];
-    uint8_t    name[MAX_NAME_LEN];
-    uint8_t    identity[MAX_IDENTITY_LEN];
-    uint8_t    website[MAX_WEBSITE_LEN];
-    uint8_t    securityContact[MAX_SECURITYCONTACT_LEN];
-    uint8_t    details[MAX_DETAIL_LEN];
+    char       name[MAX_NAME_LEN];
 } txContent_t;
 
 typedef struct txContext_t {

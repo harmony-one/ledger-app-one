@@ -25,6 +25,13 @@ SOFTWARE.
 // command.
 #include "rlp.h"
 
+// APDU parameters
+#define P1_FIRST        0x00 // 1st packet of multi-packet transfer
+#define P1_MORE         0x80 // nth packet of multi-packet transfer
+
+#define P2_SIGN_HASH    0x01 // sign transaction hash
+#define P2_FINISH       0x02 // last packet of multi-packet transfer
+
 typedef struct {
 	bool genAddr;
 	uint8_t displayIndex;
@@ -61,7 +68,8 @@ typedef struct {
     uint32_t amountLength;
     uint8_t partialAmountStr[13];
     uint8_t hash[32];
-    uint8_t fullStr[128]; // variable length
+    uint8_t fullStr[132]; // variable length
+    uint8_t partialStr[13];
     uint8_t typeStr[40]; // variable-length
     bool initialized; // protects against certain attacks
 } signStakingContext_t;

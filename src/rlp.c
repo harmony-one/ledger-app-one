@@ -434,19 +434,27 @@ static void processString(txContext_t *context, uint8_t *address, uint32_t lengt
         PRINTF("Invalid type for RLP_STRING\n");
         THROW(EXCEPTION);
     }
-    if (context->currentFieldLength > length) {
+    if ((address != NULL) && (context->currentFieldLength > length)) {
         PRINTF("Invalid length for RLP STRING\n");
         THROW(EXCEPTION);
     }
+
     if (context->currentFieldPos < context->currentFieldLength) {
         uint32_t copySize =
                 (context->commandLength <
                  ((context->currentFieldLength - context->currentFieldPos))
                  ? context->commandLength
                  : context->currentFieldLength - context->currentFieldPos);
-        copyTxData(context,
-                   address + context->currentFieldPos,
-                   copySize);
+
+        if (address != NULL) {
+            copyTxData(context,
+                       address + context->currentFieldPos,
+                       copySize);
+        } else {
+            copyTxData(context,
+                       NULL,
+                       copySize);
+        }
     }
     if (context->currentFieldPos == context->currentFieldLength) {
         context->txCurrentField++;
@@ -646,19 +654,20 @@ int processStaking(struct txContext_t *context) {
                 processDescription(context);
                 break;
             case STAKE_RLP_NAME:
+                os_memset(context->content->name, 0, MAX_NAME_LEN);
                 processString(context, context->content->name, MAX_NAME_LEN);
                 break;
             case STAKE_RLP_IDENTITY:
-                processString(context, context->content->identity, MAX_IDENTITY_LEN);
+                processString(context, NULL, 0);
                 break;
             case STAKE_RLP_WEBSITE:
-                processString(context, context->content->website, MAX_WEBSITE_LEN);
+                processString(context, NULL, 0);
                 break;
             case STAKE_RLP_SECURITYCONTACT:
-                processString(context, context->content->securityContact, MAX_SECURITYCONTACT_LEN);
+                processString(context, NULL, 0);
                 break;
             case STAKE_RLP_DETAILS:
-                processString(context, context->content->details, MAX_DETAIL_LEN);
+                processString(context, NULL, 0);
                 if (context->content->directive == DirectiveEditValidator) {
                     context->stakeCurrentField = STAKE_RLP_RATE;
                 }
