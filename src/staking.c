@@ -143,22 +143,14 @@ static unsigned int ui_delegation_rate_button(unsigned int button_mask, unsigned
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
             os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
             if ( ctx->txContent.directive == DirectiveCreateValidator)  {
-                char buf[20];
                 int totalNumOfKeysToDisplay = ctx->txContent.blsPubKeySize;
-
                 //cap at 10 BLS keys, each key takes 13 bytes
                 if (totalNumOfKeysToDisplay > 10) {
                     totalNumOfKeysToDisplay = 10;
                 }
-                for(int i=0; i< totalNumOfKeysToDisplay; i++) {
-                    to_hex(buf, (unsigned char *)&ctx->txContent.blsPubKey[i], 10);
-                    buf[10] = '.';
-                    buf[11] = '.';
-                    buf[12] = '.';
-                    os_memmove(ctx->fullStr + offset , buf, 13);
-                    offset += 13;
-                }
 
+                os_memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 13 * totalNumOfKeysToDisplay);
+                offset += 13 * totalNumOfKeysToDisplay;
             } else {
                 char buf[20];
                 os_memmove(ctx->fullStr + offset, "remove:", 7);

@@ -20,6 +20,7 @@
 #include <stdint.h>
 
 #include "rlp.h"
+#include "uint256.h"
 
 bool rlpCanDecode(uint8_t *buffer, uint32_t bufferLength, bool *valid) {
     if (*buffer <= 0x7f) {
@@ -715,8 +716,15 @@ int processStaking(struct txContext_t *context) {
                 context->stakeCurrentField = STAKE_RLP_BLSPUBKEY;
                 break;
             case STAKE_RLP_BLSPUBKEY:
-                processBlsPubKey(context, (uint8_t **)&context->content->blsPubKey[context->currentBlsKeyIndex++]);
-                if (context->currentBlsKeyIndex == context->content->blsPubKeySize) {
+                processBlsPubKey(context, (uint8_t **)&context->content->blsPubKey);
+                if (context->currentBlsKeyIndex * 13 < BLS_KEY_STR_LEN) {
+                    char *blsPtr = (char *)context->content->blsKeyStr + context->currentBlsKeyIndex * 13;
+                    to_hex(blsPtr, (unsigned char *)&context->content->blsPubKey, 10);
+                    blsPtr[10] = '.';
+                    blsPtr[11] = '.';
+                    blsPtr[12] = '.';
+                }
+                if (++context->currentBlsKeyIndex== context->content->blsPubKeySize) {
                     context->stakeCurrentField = STAKE_RLP_AMOUNT;
                 }
                 else {
