@@ -418,7 +418,7 @@ static void processBlsPubKey(txContext_t *context, uint8_t **address) {
                  ? context->commandLength
                  : context->currentFieldLength - context->currentFieldPos);
         copyTxData(context,
-                   address + context->currentFieldPos,
+                   (uint8_t *)address + context->currentFieldPos,
                    copySize);
     }
 
@@ -655,7 +655,7 @@ int processStaking(struct txContext_t *context) {
                 break;
             case STAKE_RLP_NAME:
                 os_memset(context->content->name, 0, MAX_NAME_LEN);
-                processString(context, context->content->name, MAX_NAME_LEN);
+                processString(context, (uint8_t *)context->content->name, MAX_NAME_LEN);
                 break;
             case STAKE_RLP_IDENTITY:
                 processString(context, NULL, 0);

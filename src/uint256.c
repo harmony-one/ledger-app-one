@@ -586,7 +586,8 @@ static void convertU256ToDecimalString(uint8_t *buffer, uint32_t len, char *outp
         }
     }
 
-    int integerPartSize = len - 18, p = 0, q = 0;
+    int integerPartSize = len - 18;
+    uint32_t p = 0, q = 0;
     if (integerPartSize > 0) {
         while (integerPartSize-- > 0) {
             output[p] = buffer[p];
@@ -635,7 +636,7 @@ bool convertNumericDecimalToString(uint8_t *value,  uint8_t length, char *output
     os_memset(stringBuf, 0, sizeof(stringBuf));
     tostring256(&target, 10, stringBuf, 78, &outLen);
 
-    convertU256ToDecimalString(stringBuf, outLen, output);
+    convertU256ToDecimalString((uint8_t *)stringBuf, outLen, output);
     return true;
 }
 
