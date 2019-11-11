@@ -16,12 +16,10 @@
 ********************************************************************************/
 
 // Adapted from https://github.com/LedgerHQ/ledger-app-eth/src_common/ethUstream.c
-
 #include <stdbool.h>
 #include <stdint.h>
 
 #include "rlp.h"
-#define PRINTF(x, ...) {}
 
 bool rlpCanDecode(uint8_t *buffer, uint32_t bufferLength, bool *valid) {
     if (*buffer <= 0x7f) {
@@ -120,7 +118,6 @@ static void processDirective(txContext_t *context) {
                    copySize);
     }
     if (context->currentFieldPos == context->currentFieldLength) {
-        context->content->destinationLength = context->currentFieldLength;
         context->stakeCurrentField++;
         context->processingField = false;
     }
@@ -132,7 +129,14 @@ static void processStakingMessage(txContext_t *context) {
         THROW(EXCEPTION);
     }
 
-    context->stakeCurrentField++;
+    if ( (context->content->directive == DirectiveCreateValidator) ||
+         (context->content->directive == DirectiveEditValidator)) {
+        context->stakeCurrentField = STAKE_RLP_VALIDATORADDR;
+    }
+    else {
+        //DirectiveDelegate, DirectiveUnDelegate, DirectiveCollectReWards
+        context->stakeCurrentField = STAKE_RLP_DELEGATORADDR;
+    }
     context->processingField = false;
 }
 
@@ -265,7 +269,7 @@ uint8_t readTxByte(txContext_t *context) {
     return data;
 }
 
-static void processValue(txContext_t *context) {
+static void processValue(txContext_t *context, txInt256_t *value) {
     if (context->currentFieldIsList) {
         PRINTF("Invalid type for RLP_VALUE\n");
         THROW(EXCEPTION);
@@ -281,16 +285,17 @@ static void processValue(txContext_t *context) {
                  ? context->commandLength
                  : context->currentFieldLength - context->currentFieldPos);
         copyTxData(context,
-                   context->content->value.value + context->currentFieldPos,
+                   value->value + context->currentFieldPos,
                    copySize);
     }
     if (context->currentFieldPos == context->currentFieldLength) {
-        context->content->value.length = context->currentFieldLength;
+        value->length = context->currentFieldLength;
         context->txCurrentField++;
         context->stakeCurrentField++;
         context->processingField = false;
     }
 }
+
 
 static void processShard(txContext_t *context, uint8_t *shard) {
     if (context->currentFieldIsList) {
@@ -322,7 +327,6 @@ static void processShard(txContext_t *context, uint8_t *shard) {
         context->content->fromShard = shardId;
     }
     if (context->currentFieldPos == context->currentFieldLength) {
-        context->content->destinationLength = context->currentFieldLength;
         context->txCurrentField++;
         context->processingField = false;
     }
@@ -334,7 +338,7 @@ static void processAddress(txContext_t *context, uint8_t *address) {
         PRINTF("Invalid type for RLP_ADDRESS\n");
         THROW(EXCEPTION);
     }
-    if (context->currentFieldLength > MAX_ADDRESS) {
+    if (context->currentFieldLength > MAX_ECC_ADDRESS) {
         PRINTF("Invalid length for RLP ADDRESS\n");
         THROW(EXCEPTION);
     }
@@ -349,7 +353,110 @@ static void processAddress(txContext_t *context, uint8_t *address) {
                    copySize);
     }
     if (context->currentFieldPos == context->currentFieldLength) {
-        context->content->destinationLength = context->currentFieldLength;
+        context->txCurrentField++;
+        context->stakeCurrentField++;
+        context->processingField = false;
+    }
+}
+
+static void processDescription(txContext_t *context) {
+    if (! context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP STAKING MESSAGE \n");
+        THROW(EXCEPTION);
+    }
+
+    context->stakeCurrentField = STAKE_RLP_NAME;
+    context->processingField = false;
+}
+
+static void processCommissionRates(txContext_t *context) {
+    if (! context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP STAKING COMMISSIONRATES \n");
+        THROW(EXCEPTION);
+    }
+
+    context->stakeCurrentField = STAKE_RLP_RATE;
+    context->processingField = false;
+}
+
+static void processSlotPubKeys(txContext_t *context) {
+    if (! context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP STAKING SLOT PUBKEYS \n");
+        THROW(EXCEPTION);
+    }
+
+    context->stakeCurrentField = STAKE_RLP_BLSPUBKEY;
+    context->content->blsPubKeySize = context->currentFieldLength / (MAX_BLS_ADDRESS + 1);
+    context->currentBlsKeyIndex = 0;
+    context->processingField = false;
+}
+
+static void processDecimal(txContext_t *context) {
+    if (! context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP_DECIMAL\n");
+        THROW(EXCEPTION);
+    }
+
+    context->stakeCurrentField++;
+    context->processingField = false;
+}
+
+static void processBlsPubKey(txContext_t *context, uint8_t **address) {
+    if (context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP_BLSPUBKEY\n");
+        THROW(EXCEPTION);
+    }
+    if (context->currentFieldLength > MAX_BLS_ADDRESS) {
+        PRINTF("Invalid length for RLP_BLSPUBKEY\n");
+        THROW(EXCEPTION);
+    }
+
+    if (context->currentFieldPos < context->currentFieldLength) {
+        uint32_t copySize =
+                (context->commandLength <
+                 ((context->currentFieldLength - context->currentFieldPos))
+                 ? context->commandLength
+                 : context->currentFieldLength - context->currentFieldPos);
+        copyTxData(context,
+                   (uint8_t *)address + context->currentFieldPos,
+                   copySize);
+    }
+
+    if (context->currentFieldPos == context->currentFieldLength) {
+        context->txCurrentField++;
+        context->stakeCurrentField++;
+        context->processingField = false;
+    }
+}
+
+static void processString(txContext_t *context, uint8_t *address, uint32_t length) {
+    if (context->currentFieldIsList) {
+        PRINTF("Invalid type for RLP_STRING\n");
+        THROW(EXCEPTION);
+    }
+    if ((address != NULL) && (context->currentFieldLength > length)) {
+        PRINTF("Invalid length for RLP STRING\n");
+        THROW(EXCEPTION);
+    }
+
+    if (context->currentFieldPos < context->currentFieldLength) {
+        uint32_t copySize =
+                (context->commandLength <
+                 ((context->currentFieldLength - context->currentFieldPos))
+                 ? context->commandLength
+                 : context->currentFieldLength - context->currentFieldPos);
+
+        if (address != NULL) {
+            copyTxData(context,
+                       address + context->currentFieldPos,
+                       copySize);
+        } else {
+            copyTxData(context,
+                       NULL,
+                       copySize);
+        }
+    }
+    if (context->currentFieldPos == context->currentFieldLength) {
         context->txCurrentField++;
         context->stakeCurrentField++;
         context->processingField = false;
@@ -432,13 +539,13 @@ int processTx(txContext_t *context) {
                 processShard(context, (uint8_t *)&context->content->fromShard);
                 break;
             case TX_RLP_TOSHARD:
-               processShard(context, (uint8_t *)&context->content->toShard);
+                processShard(context, (uint8_t *)&context->content->toShard);
                 break;
             case TX_RLP_TO:
                 processAddress(context, context->content->destination);
                 break;
             case TX_RLP_AMOUNT:
-                processValue(context);
+                processValue(context, &context->content->value);
                 return 0;
             default:
                 return -1;
@@ -504,7 +611,6 @@ int processStaking(struct txContext_t *context) {
             context->processingField = true;
         }
 
-
         switch (context->stakeCurrentField) {
             case STAKE_RLP_CONTENT:
                 processContent(context);
@@ -517,6 +623,9 @@ int processStaking(struct txContext_t *context) {
                 break;
             case STAKE_RLP_DELEGATORADDR:
                 processAddress(context, context->content->destination);
+                if (context->content->directive == DirectiveCollectRewards) {
+                    context->stakeCurrentField = STAKE_RLP_DONE;
+                }
                 break;
             case STAKE_RLP_VALIDATORADDR:
                 processAddress(context, context->content->validatorAddress);
@@ -524,18 +633,106 @@ int processStaking(struct txContext_t *context) {
                     || (context->content->directive == DirectiveUndelegate)) {
                     context->stakeCurrentField = STAKE_RLP_AMOUNT;
                 }
-                else if (context->content->directive == DirectiveRedelegate) {
-                    context->stakeCurrentField = STAKE_RLP_VALIDATORDESTADDR;
+                else  {
+                    context->stakeCurrentField = STAKE_RLP_DESCRIPTION;
                 }
                 break;
-            case STAKE_RLP_VALIDATORDESTADDR:
-                processAddress(context, context->content->validatorDstAddress);
-                break;
             case STAKE_RLP_AMOUNT:
-                processValue(context);
+                processValue(context, &context->content->value);
+                if ((context->content->directive == DirectiveDelegate)
+                    || (context->content->directive == DirectiveUndelegate)
+                    || (context->content->directive == DirectiveCreateValidator)) {
+                    context->stakeCurrentField = STAKE_RLP_DONE;
+                } else {
+                    return  -1;
+                }
                 break;
             case STAKE_RLP_NONCE:
                 context->stakeCurrentField = STAKE_RLP_DONE;
+                break;
+            case STAKE_RLP_DESCRIPTION:
+                processDescription(context);
+                break;
+            case STAKE_RLP_NAME:
+                os_memset(context->content->name, 0, MAX_NAME_LEN);
+                processString(context, (uint8_t *)context->content->name, MAX_NAME_LEN);
+                break;
+            case STAKE_RLP_IDENTITY:
+                processString(context, NULL, 0);
+                break;
+            case STAKE_RLP_WEBSITE:
+                processString(context, NULL, 0);
+                break;
+            case STAKE_RLP_SECURITYCONTACT:
+                processString(context, NULL, 0);
+                break;
+            case STAKE_RLP_DETAILS:
+                processString(context, NULL, 0);
+                if (context->content->directive == DirectiveEditValidator) {
+                    context->stakeCurrentField = STAKE_RLP_RATE;
+                }
+                break;
+            case STAKE_RLP_COMMISSIONRATES:
+                processCommissionRates(context);
+                break;
+            case STAKE_RLP_RATE:
+                processDecimal(context);
+                break;
+            case STAKE_RLP_RATE_VALUE:
+                processValue(context, &context->content->rate);
+                if (context->content->directive == DirectiveEditValidator) {
+                    context->stakeCurrentField = STAKE_RLP_MINSELFDELEGATION;
+                }
+                break;
+            case STAKE_RLP_MAXRATE:
+                processDecimal(context);
+                break;
+            case STAKE_RLP_MAXRATE_VALUE:
+                processValue(context, &context->content->maxRate);
+                break;
+            case STAKE_RLP_MAXCHANGERATE:
+                processDecimal(context);
+                break;
+            case STAKE_RLP_MAXCHANGERATE_VALUE:
+                processValue(context, &context->content->maxChangeRate);
+                break;
+            case STAKE_RLP_MINSELFDELEGATION:
+                processValue(context, &context->content->minSelfDelegation);
+                break;
+            case STAKE_RLP_MAXTOTALDELEGATION:
+                processValue(context, &context->content->maxTotalDelegation);
+                if (context->content->directive == DirectiveCreateValidator) {
+                    context->stakeCurrentField = STAKE_RLP_SLOTPUBKEYS;
+                }
+                else if (context->content->directive == DirectiveEditValidator) {
+                    context->stakeCurrentField = STAKE_RLP_SLOTKEYTOREMOVE;
+                } else {
+                    return  -1;
+                }
+                break;
+            case STAKE_RLP_SLOTPUBKEYS:
+                processSlotPubKeys(context);
+                context->stakeCurrentField = STAKE_RLP_BLSPUBKEY;
+                break;
+            case STAKE_RLP_BLSPUBKEY:
+                processBlsPubKey(context, (uint8_t **)&context->content->blsPubKey[context->currentBlsKeyIndex++]);
+                if (context->currentBlsKeyIndex == context->content->blsPubKeySize) {
+                    context->stakeCurrentField = STAKE_RLP_AMOUNT;
+                }
+                else {
+                    context->stakeCurrentField = STAKE_RLP_BLSPUBKEY;
+                }
+                break;
+            case STAKE_RLP_SLOTKEYTOREMOVE:
+                processBlsPubKey(context, (uint8_t **)&context->content->slotKeyToRemove);
+                break;
+            case STAKE_RLP_SLOTKEYTOADD:
+                processBlsPubKey(context, (uint8_t **)&context->content->slotKeyToAdd);
+                if (context->content->directive == DirectiveEditValidator) {
+                    context->stakeCurrentField = STAKE_RLP_DONE;
+                } else {
+                    return -1;
+                }
                 break;
             default:
                 return -1;

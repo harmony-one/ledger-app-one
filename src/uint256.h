@@ -67,5 +67,6 @@ bool tostring128(uint128_t *number, uint32_t base, char *out,
 bool tostring256(uint256_t *number, uint32_t base, char *out,
                  uint32_t outLength, uint32_t *realLength);
 void convertU256ToString(uint8_t *buffer, char *output, uint32_t  *outLength);
-
+bool convertNumericDecimalToString(uint8_t *value,  uint8_t length, char *output);
+void to_hex(char * dest, const unsigned char * src, const unsigned int dest_len);
 #endif /* _UINT256_H_ */

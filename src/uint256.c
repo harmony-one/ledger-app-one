@@ -574,3 +574,82 @@ void convertU256ToString(uint8_t *buffer, char *output, uint32_t  *outLength) {
     os_memset(output, 0, 78);
     tostring256(&amount, 10, output, 78, outLength);
 }
+
+static void convertU256ToDecimalString(uint8_t *buffer, uint32_t len, char *output) {
+    uint32_t paddedZeros = 0;
+    for(int i = len -1; i >= 0; i--) {
+        if (buffer[i] == '0') {
+            paddedZeros++;
+        }
+        else  {
+            break;
+        }
+    }
+
+    int integerPartSize = len - 18;
+    uint32_t p = 0, q = 0;
+    if (integerPartSize > 0) {
+        while (integerPartSize-- > 0) {
+            output[p] = buffer[p];
+            p++;
+            q++;
+        }
+        output[p++] = '.';
+    }
+    else if (integerPartSize == 0) {
+        output[p++] = '0';
+        output[p++] = '.';
+    }
+    else {
+        int zerosToFill = -integerPartSize;
+        output[p++] = '0';
+        output[p++] = '.';
+        for(int i = 0; i < zerosToFill; i++) {
+            output[p++] = '0';
+        }
+    }
+
+    for (; q < len - paddedZeros; q++ ) {
+        output[p++] = buffer[q];
+    }
+    output[p] = 0;
+}
+
+// convert a numeric.Dec with 18 bytes decimal resolution to a readable decimal string
+bool convertNumericDecimalToString(uint8_t *value,  uint8_t length, char *output) {
+    //32 bytes is the maximal length of a u256 int, 78 is the maximal size of u256 in decimal string
+    uint8_t   numberBuf[32];
+    char      stringBuf[78];
+    uint256_t target;
+    uint32_t  outLen;
+
+    if (length > 32) {
+        return false;
+    }
+
+    os_memset(numberBuf, 0, sizeof(numberBuf));
+    os_memmove(&numberBuf[32 - length], value, length);
+
+    clear256(&target);
+    readu256BE(numberBuf, &target);
+
+    os_memset(stringBuf, 0, sizeof(stringBuf));
+    tostring256(&target, 10, stringBuf, 78, &outLen);
+
+    convertU256ToDecimalString((uint8_t *)stringBuf, outLen, output);
+    return true;
+}
+
+/** array of capital letter hex values */
+static const char HEX_CAP[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', };
+/** converts a byte array in src to a hex array in dest, using only dest_len bytes of dest before stopping. */
+void to_hex(char * dest, const unsigned char * src, const unsigned int dest_len) {
+    for (unsigned int src_ix = 0, dest_ix = 0; dest_ix < dest_len; src_ix++, dest_ix += 2) {
+        unsigned char src_c = *(src + src_ix);
+        unsigned char nibble0 = (src_c >> 4) & 0xF;
+        unsigned char nibble1 = src_c & 0xF;
+
+        *(dest + dest_ix + 0) = HEX_CAP[nibble0];
+        *(dest + dest_ix + 1) = HEX_CAP[nibble1];
+    }
+}
