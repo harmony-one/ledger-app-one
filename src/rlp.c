@@ -402,7 +402,7 @@ static void processDecimal(txContext_t *context) {
     context->processingField = false;
 }
 
-static void processBlsPubKey(txContext_t *context, uint8_t **address) {
+static void processBlsPubKey(txContext_t *context, uint8_t *address) {
     if (context->currentFieldIsList) {
         PRINTF("Invalid type for RLP_BLSPUBKEY\n");
         THROW(EXCEPTION);
@@ -419,7 +419,7 @@ static void processBlsPubKey(txContext_t *context, uint8_t **address) {
                  ? context->commandLength
                  : context->currentFieldLength - context->currentFieldPos);
         copyTxData(context,
-                   (uint8_t *)address + context->currentFieldPos,
+                   address + context->currentFieldPos,
                    copySize);
     }
 
@@ -716,15 +716,15 @@ int processStaking(struct txContext_t *context) {
                 context->stakeCurrentField = STAKE_RLP_BLSPUBKEY;
                 break;
             case STAKE_RLP_BLSPUBKEY:
-                processBlsPubKey(context, (uint8_t **)&context->content->blsPubKey);
+                processBlsPubKey(context,  (uint8_t *)context->content->blsPubKey);
                 if (context->currentBlsKeyIndex * 13 < BLS_KEY_STR_LEN) {
                     char *blsPtr = (char *)context->content->blsKeyStr + context->currentBlsKeyIndex * 13;
-                    to_hex(blsPtr, (unsigned char *)&context->content->blsPubKey, 10);
+                    to_hex(blsPtr, (unsigned char *)context->content->blsPubKey, 10);
                     blsPtr[10] = '.';
                     blsPtr[11] = '.';
                     blsPtr[12] = '.';
                 }
-                if (++context->currentBlsKeyIndex== context->content->blsPubKeySize) {
+                if (++context->currentBlsKeyIndex == context->content->blsPubKeySize) {
                     context->stakeCurrentField = STAKE_RLP_AMOUNT;
                 }
                 else {
@@ -732,10 +732,20 @@ int processStaking(struct txContext_t *context) {
                 }
                 break;
             case STAKE_RLP_SLOTKEYTOREMOVE:
-                processBlsPubKey(context, (uint8_t **)&context->content->slotKeyToRemove);
+                os_memmove(context->content->blsKeyStr, "remove:", 7);
+                processBlsPubKey(context,  (uint8_t *)context->content->blsPubKey);
+                to_hex(context->content->blsKeyStr + 7, (unsigned char *)context->content->blsPubKey, 10);
+                context->content->blsKeyStr[17] = '.';
+                context->content->blsKeyStr[18] = '.';
+                context->content->blsKeyStr[19] = '.';
                 break;
             case STAKE_RLP_SLOTKEYTOADD:
-                processBlsPubKey(context, (uint8_t **)&context->content->slotKeyToAdd);
+                os_memmove(context->content->blsKeyStr + 20, ",add:", 5);
+                processBlsPubKey(context,  (uint8_t *)context->content->blsPubKey);
+                to_hex(context->content->blsKeyStr + 25, (unsigned char *)context->content->blsPubKey, 10);
+                context->content->blsKeyStr[35] = '.';
+                context->content->blsKeyStr[36] = '.';
+                context->content->blsKeyStr[37] = '.';
                 if (context->content->directive == DirectiveEditValidator) {
                     context->stakeCurrentField = STAKE_RLP_DONE;
                 } else {

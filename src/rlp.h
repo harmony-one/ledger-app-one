@@ -91,8 +91,6 @@ typedef struct txContent_t {
     uint8_t    blsPubKey[MAX_BLS_ADDRESS];
     uint32_t   blsPubKeySize;
     uint8_t    blsKeyStr[BLS_KEY_STR_LEN]; // hold 10 BLS keys, each 13 bytes
-    uint8_t    slotKeyToRemove[MAX_BLS_ADDRESS];
-    uint8_t    slotKeyToAdd[MAX_BLS_ADDRESS];
     char       name[MAX_NAME_LEN];
 } txContent_t;
 
