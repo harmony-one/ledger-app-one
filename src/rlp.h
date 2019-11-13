@@ -8,6 +8,7 @@
 #define MAX_INT256 32
 #define MAX_ECC_ADDRESS 20
 #define MAX_BLS_ADDRESS 48
+#define BLS_KEY_STR_LEN 130
 #define MAX_INT32  4
 
 //max length of staking validator description fields
@@ -87,10 +88,9 @@ typedef struct txContent_t {
     uint32_t   directive;
     uint8_t    destination[MAX_ECC_ADDRESS];
     uint8_t    validatorAddress[MAX_ECC_ADDRESS];
-    uint8_t    blsPubKey[MAX_BLS_PUB_KEYS][MAX_BLS_ADDRESS];
+    uint8_t    blsPubKey[MAX_BLS_ADDRESS];
     uint32_t   blsPubKeySize;
-    uint8_t    slotKeyToRemove[MAX_BLS_ADDRESS];
-    uint8_t    slotKeyToAdd[MAX_BLS_ADDRESS];
+    uint8_t    blsKeyStr[BLS_KEY_STR_LEN]; // hold 10 BLS keys, each 13 bytes
     char       name[MAX_NAME_LEN];
 } txContent_t;
 

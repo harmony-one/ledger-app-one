@@ -56,15 +56,14 @@ typedef struct {
 
 typedef struct {
     uint8_t displayIndex;
-    uint8_t buf[510]; // holds RLP encoded tx bytes; large enough for two 0xFF reads
+    uint8_t buf[1024]; // holds RLP encoded tx bytes; large enough for four txn reads
     uint16_t length;  // holds RLP encoded tx length
     txContext_t txContext;
     txContent_t txContent;
     uint8_t hash[32];
     uint8_t fullStr[132]; // variable length
     uint32_t fullStrLength;
-    uint8_t partialStr[13];
-    uint8_t typeStr[40]; // variable-length
+    uint8_t partialStr[18];
     bool initialized; // protects against certain attacks
 } signStakingContext_t;
 

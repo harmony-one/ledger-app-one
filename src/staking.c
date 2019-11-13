@@ -143,40 +143,17 @@ static unsigned int ui_delegation_rate_button(unsigned int button_mask, unsigned
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
             os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
             if ( ctx->txContent.directive == DirectiveCreateValidator)  {
-                char buf[20];
                 int totalNumOfKeysToDisplay = ctx->txContent.blsPubKeySize;
-
                 //cap at 10 BLS keys, each key takes 13 bytes
                 if (totalNumOfKeysToDisplay > 10) {
                     totalNumOfKeysToDisplay = 10;
                 }
-                for(int i=0; i< totalNumOfKeysToDisplay; i++) {
-                    to_hex(buf, (unsigned char *)&ctx->txContent.blsPubKey[i], 10);
-                    buf[10] = '.';
-                    buf[11] = '.';
-                    buf[12] = '.';
-                    os_memmove(ctx->fullStr + offset , buf, 13);
-                    offset += 13;
-                }
-
+                os_memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 13 * totalNumOfKeysToDisplay);
+                offset += 13 * totalNumOfKeysToDisplay;
             } else {
-                char buf[20];
-                os_memmove(ctx->fullStr + offset, "remove:", 7);
-                offset += 7;
-
-                to_hex(buf, (unsigned char *)ctx->txContent.slotKeyToRemove, 10);
-                buf[10] = '.';
-                buf[11] = '.';
-                buf[12] = '.';
-
-                os_memmove(ctx->fullStr + offset , buf, 13);
-                offset += 13;
-
-                os_memmove(ctx->fullStr + offset, ",add:", 5);
-                offset += 5;
-                to_hex(buf, (unsigned char *)ctx->txContent.slotKeyToAdd, 10);
-                os_memmove(ctx->fullStr + offset , buf, 13);
-                offset += 13;
+                //7 + 13 + 5 + 13 = 38 bytes
+                os_memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 38);
+                offset += 38;
             }
 
             ctx->fullStrLength = offset;
@@ -547,7 +524,7 @@ static const bagl_element_t ui_signStaking_approve[] = {
         UI_ICON_LEFT(0x00, BAGL_GLYPH_ICON_CROSS),
         UI_ICON_RIGHT(0x00, BAGL_GLYPH_ICON_CHECK),
 
-        UI_TEXT(0x00, 0, 12, 128, global.signStakingContext.typeStr),
+        UI_TEXT(0x00, 0, 12, 128, global.signStakingContext.partialStr),
 };
 
 static unsigned int ui_signStaking_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
@@ -610,19 +587,19 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     }
 
     if (ctx->txContent.directive == DirectiveCreateValidator) {
-        os_memmove(ctx->typeStr, "Create Validator", 17);
+        os_memmove(ctx->partialStr, "Create Validator", 17);
     }
     else if (ctx->txContent.directive == DirectiveEditValidator) {
-        os_memmove(ctx->typeStr, "Edit Validator", 15);
+        os_memmove(ctx->partialStr, "Edit Validator", 15);
     }
     else if (ctx->txContent.directive == DirectiveDelegate) {
-        os_memmove(ctx->typeStr, "Delegate Stake", 14);
+        os_memmove(ctx->partialStr, "Delegate Stake", 14);
     }
     else if (ctx->txContent.directive == DirectiveUndelegate) {
-        os_memmove(ctx->typeStr, "Undelegate Stake", 16);
+        os_memmove(ctx->partialStr, "Undelegate Stake", 16);
     }
     else if (ctx->txContent.directive == DirectiveCollectRewards) {
-        os_memmove(ctx->typeStr, "Collect Rewards", 16);
+        os_memmove(ctx->partialStr, "Collect Rewards", 16);
     }
     else {
         THROW(INVALID_PARAMETER);
