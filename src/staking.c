@@ -577,6 +577,12 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
         ctx->initialized = true;
     }
 
+    //maximal 4 cmd buffers
+    if (ctx->length + dataLength > CMD_BUFFER_SIZE * 4) {
+        THROW(EXCEPTION_OVERFLOW);
+        return;
+    }
+
     // Add the new data to transaction decoder.
     os_memmove(ctx->buf + ctx->length, dataBuffer, dataLength);
     ctx->length += dataLength;
