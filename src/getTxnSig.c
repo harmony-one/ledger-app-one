@@ -238,7 +238,10 @@ static unsigned int ui_address_compare_button(unsigned int button_mask, unsigned
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
             os_memset(numberBuf, 0, 32);
             os_memcpy(&numberBuf[32- ctx->txContent.value.length], ctx->txContent.value.value, ctx->txContent.value.length);
-            convertU256ToString(numberBuf, (char *)ctx->amountStr,  &ctx->amountLength);
+            if ( convertU256ToString(numberBuf, (char *)ctx->amountStr, 78,  &ctx->amountLength) == false) {
+                THROW(EXCEPTION_OVERFLOW);
+                return 0;
+            }
             ctx->displayIndex = 0;
             if (ctx->amountLength > 12) {
                 os_memmove(ctx->partialAmountStr, ctx->amountStr, 12);

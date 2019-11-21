@@ -18,6 +18,7 @@
 // Adapted from https://github.com/calccrypto/uint256_t
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <os.h>
 #include "uint256.h"
@@ -419,38 +420,6 @@ void mul256(uint256_t *number1, uint256_t *number2, uint256_t *target) {
     add256(&target1, &target2, target);
 }
 
-void divmod128(uint128_t *l, uint128_t *r, uint128_t *retDiv,
-               uint128_t *retMod) {
-    uint128_t copyd, adder, resDiv, resMod;
-    uint128_t one;
-    UPPER(one) = 0;
-    LOWER(one) = 1;
-    uint32_t diffBits = bits128(l) - bits128(r);
-    clear128(&resDiv);
-    copy128(&resMod, l);
-    if (gt128(r, l)) {
-        copy128(retMod, l);
-        clear128(retDiv);
-    } else {
-        shiftl128(r, diffBits, &copyd);
-        shiftl128(&one, diffBits, &adder);
-        if (gt128(&copyd, &resMod)) {
-            shiftr128(&copyd, 1, &copyd);
-            shiftr128(&adder, 1, &adder);
-        }
-        while (gte128(&resMod, r)) {
-            if (gte128(&resMod, &copyd)) {
-                minus128(&resMod, &copyd, &resMod);
-                or128(&resDiv, &adder, &resDiv);
-            }
-            shiftr128(&copyd, 1, &copyd);
-            shiftr128(&adder, 1, &adder);
-        }
-        copy128(retDiv, &resDiv);
-        copy128(retMod, &resMod);
-    }
-}
-
 void divmod256(uint256_t *l, uint256_t *r, uint256_t *retDiv,
                uint256_t *retMod) {
     uint256_t copyd, adder, resDiv, resMod;
@@ -494,31 +463,6 @@ static void reverseString(char *str, uint32_t length) {
     }
 }
 
-bool tostring128(uint128_t *number, uint32_t baseParam, char *out,
-                 uint32_t outLength) {
-    uint128_t rDiv;
-    uint128_t rMod;
-    uint128_t base;
-    copy128(&rDiv, number);
-    clear128(&rMod);
-    clear128(&base);
-    LOWER(base) = baseParam;
-    uint32_t offset = 0;
-    if ((baseParam < 2) || (baseParam > 16)) {
-        return false;
-    }
-    do {
-        if (offset > (outLength - 1)) {
-            return false;
-        }
-        divmod128(&rDiv, &base, &rDiv, &rMod);
-        out[offset++] = HEXDIGITS[(uint8_t)LOWER(rMod)];
-    } while (!zero128(&rDiv));
-    out[offset] = '\0';
-    reverseString(out, offset);
-    return true;
-}
-
 bool tostring256(uint256_t *number, uint32_t baseParam, char *out,
                  uint32_t outLength, uint32_t *realLength) {
     uint256_t rDiv;
@@ -546,12 +490,14 @@ bool tostring256(uint256_t *number, uint32_t baseParam, char *out,
     return true;
 }
 
-void convertU256ToString(uint8_t *buffer, char *output, uint32_t  *outLength) {
+bool convertU256ToString(uint8_t *buffer, char *output, uint32_t sizeLimit, uint32_t  *outLength) {
     uint256_t target;
     uint256_t amount;
     uint256_t nanoAmount;
     uint256_t rMod;
     uint256_t nano;
+    uint32_t  len, len2;
+    char  stringBuf[78];
 
     clear256(&target);
     clear256(&amount);
@@ -570,9 +516,56 @@ void convertU256ToString(uint8_t *buffer, char *output, uint32_t  *outLength) {
     //convert to one
     divmod256(&nanoAmount, &nano, &amount, &rMod);
 
-    //78 is the maximum u256 length
-    os_memset(output, 0, 78);
-    tostring256(&amount, 10, output, 78, outLength);
+    //78 is the maximal possible length of a uint256 string
+    os_memset(stringBuf, 0, 78);
+    if (tostring256(&amount, 10, stringBuf, 78,  &len) == false) {
+        return false;
+    }
+
+    os_memset(output, 0, sizeLimit);
+    os_memmove(output, stringBuf, len);
+    *outLength = len;
+
+    //check for non zero decimal part
+    if (! zero256(&rMod)) {
+        os_memset(stringBuf, 0, 78);
+        if (tostring256(&rMod, 10, stringBuf, 78,  &len2) == false) {
+            return false;
+        }
+
+        //removing the trailing zeros from stringBuf
+        for (int i = len2 -1 ; i >= 0; i--) {
+            if (stringBuf[i] == '0') {
+                stringBuf[i] = 0;
+            }
+            else {
+                break;
+            }
+        }
+
+        //append the decimal part to the output
+        output[len] = '.';
+        *outLength += 1;
+
+        //this should never happen
+        if (len2 > 9) {
+            return false;
+        }
+
+        if (*outLength + 9 > sizeLimit) {
+            return false;
+        }
+
+        //pad leading zeros
+        os_memset(&output[len + 1], '0', 9 - len2);
+        *outLength += 9 - len2;
+
+        //copy remaining digits
+        os_memcpy(&output[len + 1 + 9 - len2], stringBuf, strlen(stringBuf));
+        *outLength += strlen(stringBuf);
+    }
+
+    return true;
 }
 
 static void convertU256ToDecimalString(uint8_t *buffer, uint32_t len, char *output) {
@@ -640,8 +633,6 @@ bool convertNumericDecimalToString(uint8_t *value,  uint8_t length, char *output
     return true;
 }
 
-/** array of capital letter hex values */
-static const char HEX_CAP[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', };
 /** converts a byte array in src to a hex array in dest, using only dest_len bytes of dest before stopping. */
 void to_hex(char * dest, const unsigned char * src, const unsigned int dest_len) {
     for (unsigned int src_ix = 0, dest_ix = 0; dest_ix < dest_len; src_ix++, dest_ix += 2) {
@@ -649,7 +640,7 @@ void to_hex(char * dest, const unsigned char * src, const unsigned int dest_len)
         unsigned char nibble0 = (src_c >> 4) & 0xF;
         unsigned char nibble1 = src_c & 0xF;
 
-        *(dest + dest_ix + 0) = HEX_CAP[nibble0];
-        *(dest + dest_ix + 1) = HEX_CAP[nibble1];
+        *(dest + dest_ix + 0) = HEXDIGITS[nibble0];
+        *(dest + dest_ix + 1) = HEXDIGITS[nibble1];
     }
 }

@@ -21,6 +21,8 @@ SOFTWARE.
  */
 
 #include <stdbool.h>
+#include <string.h>
+#include <strings.h>
 #include <stdint.h>
 #include <os.h>
 #include <cx.h>
@@ -46,8 +48,9 @@ void deriveOneKeypair(cx_ecfp_private_key_t *privateKey, cx_ecfp_public_key_t *p
 	if (privateKey) {
 		*privateKey = pk;
 	}
-	os_memset(keySeed, 0, sizeof(keySeed));
-	os_memset(&pk, 0, sizeof(pk));
+
+    explicit_bzero(keySeed, sizeof(keySeed));
+    explicit_bzero(&pk, sizeof(pk));
 }
 
 void extractPubkeyBytes(unsigned char *dst, cx_ecfp_public_key_t *publicKey) {
@@ -85,7 +88,7 @@ void deriveAndSign(uint8_t *dst, const uint8_t *hash) {
     cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, hash, 32, tlv_sig, sizeof(tlv_sig),  &info);
 
 	//clear private key ASAP
-    os_memset(&privateKey, 0, sizeof(privateKey));
+    explicit_bzero(&privateKey, sizeof(privateKey));
 
     if (info & CX_ECCINFO_PARITY_ODD)
         recovery_id++;

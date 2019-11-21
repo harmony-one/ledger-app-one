@@ -32,6 +32,8 @@ SOFTWARE.
 #define P2_SIGN_HASH    0x01 // sign transaction hash
 #define P2_FINISH       0x02 // last packet of multi-packet transfer
 
+#define CMD_BUFFER_SIZE 255
+
 typedef struct {
 	bool genAddr;
 	uint8_t displayIndex;

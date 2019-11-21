@@ -90,9 +90,24 @@ static const bagl_element_t ui_getPublicKey_approve[] = {
 	UI_TEXT(0x00, 0, 12, 128, global.getPublicKeyContext.typeStr),
 };
 
+static void getPublicKey() {
+    uint16_t tx = 0;
+    cx_ecfp_public_key_t publicKey;
+
+    // Derive the public key and address and store them in the APDU
+    // buffer. Even though we know that tx starts at 0, it's best to
+    // always add it explicitly; this prevents a bug if we reorder the
+    // statements later.
+    deriveOneKeypair(NULL, &publicKey);
+
+    pubkeyToOneAddress(G_io_apdu_buffer + tx, &publicKey);
+    tx += 42;
+    // Flush the APDU buffer, sending the response.
+    io_exchange_with_code(SW_OK, tx);
+}
+
 static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
-	uint16_t tx = 0;
-	cx_ecfp_public_key_t publicKey;
+
 	switch (button_mask) {
 	case BUTTON_EVT_RELEASED | BUTTON_LEFT: // REJECT
 		io_exchange_with_code(SW_USER_REJECTED, 0);
@@ -100,16 +115,7 @@ static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, uns
 		break;
 
 	case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
-		// Derive the public key and address and store them in the APDU
-		// buffer. Even though we know that tx starts at 0, it's best to
-		// always add it explicitly; this prevents a bug if we reorder the
-		// statements later.
-		deriveOneKeypair(NULL, &publicKey);
-
-		pubkeyToOneAddress(G_io_apdu_buffer + tx, &publicKey);
-		tx += 42;
-		// Flush the APDU buffer, sending the response.
-		io_exchange_with_code(SW_OK, tx);
+        getPublicKey();
 
 		// Prepare the comparison screen, filling in the header and body text.
 		os_memmove(ctx->typeStr, "Compare:", 9);
@@ -130,21 +136,24 @@ static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, uns
 // These are APDU parameters that control the behavior of the getPublicKey
 // command.
 #define P2_DISPLAY_ADDRESS 0x00
-#define P2_DISPLAY_PUBKEY  0x01
+#define P2_SILENT_MODE     0x01
 
 void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, volatile unsigned int *flags, volatile unsigned int *tx) {
     os_memset(ctx, 0, sizeof(getPublicKeyContext_t));
 
-	// Sanity-check the command parameters.
-	if ((p2 != P2_DISPLAY_ADDRESS) && (p2 != P2_DISPLAY_PUBKEY)) {
-		THROW(SW_INVALID_PARAM);
-	}
+    if (p2 == P2_DISPLAY_ADDRESS) {
+        // Prepare the approval screen, filling in the header and body text.
+        os_memmove(ctx->typeStr, "Display Address?", 17);
+        UX_DISPLAY(ui_getPublicKey_approve, NULL);
+    }
+    else if (p2 == P2_SILENT_MODE) {
+        // Return public key without display it in LED
+        getPublicKey();
+    }
+    else {
+        THROW(SW_INVALID_PARAM);
+    }
 
-	ctx->genAddr = (p2 == P2_DISPLAY_ADDRESS);
-	// Prepare the approval screen, filling in the header and body text.
-	os_memmove(ctx->typeStr, "Display Address?", 17);
-	UX_DISPLAY(ui_getPublicKey_approve, NULL);
-	
-	*flags |= IO_ASYNCH_REPLY;
+    *flags |= IO_ASYNCH_REPLY;
 }
 

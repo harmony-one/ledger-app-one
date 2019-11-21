@@ -201,9 +201,9 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
             if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
                  (ctx->txContent.directive == DirectiveEditValidator) ) {
-                uint8_t  numberBuf[32];
-                char     output[80];
                 uint32_t outLen, offset = 0;
+                //re-use hash buf to save stack space
+                uint8_t *numberBuf = &ctx->hash[0];
 
                 os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
 
@@ -213,8 +213,11 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
                     os_memset(numberBuf, 0, 32);
                     os_memmove(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
                                ctx->txContent.value.length);
-                    convertU256ToString(numberBuf, output, &outLen);
-                    os_memmove(ctx->fullStr + offset, output, outLen);
+                    if (convertU256ToString(numberBuf, (char *)ctx->fullStr + offset, 78, &outLen) == false) {
+                        THROW(EXCEPTION_OVERFLOW);
+                        return 0;
+                    }
+
                     offset += outLen;
 
                     os_memmove(ctx->fullStr + offset, ",min:", 5);
@@ -227,8 +230,10 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
                 os_memset(numberBuf, 0, 32);
                 os_memmove(&numberBuf[32 - ctx->txContent.minSelfDelegation.length],
                            ctx->txContent.minSelfDelegation.value, ctx->txContent.minSelfDelegation.length);
-                convertU256ToString(numberBuf, output, &outLen);
-                os_memmove(ctx->fullStr + offset, output, outLen);
+                if (convertU256ToString(numberBuf, (char *)ctx->fullStr + offset, 78, &outLen) == false) {
+                    THROW(EXCEPTION_OVERFLOW);
+                    return 0;
+                }
                 offset += outLen;
 
                 os_memmove(ctx->fullStr + offset, ",max:", 5);
@@ -236,8 +241,10 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
                 os_memset(numberBuf, 0, 32);
                 os_memmove(&numberBuf[32 - ctx->txContent.maxTotalDelegation.length],
                            ctx->txContent.maxTotalDelegation.value, ctx->txContent.maxTotalDelegation.length);
-                convertU256ToString(numberBuf, output, &outLen);
-                os_memmove(ctx->fullStr + offset, output, outLen);
+                if (convertU256ToString(numberBuf, (char *)ctx->fullStr + offset, 78, &outLen) == false) {
+                    THROW(EXCEPTION_OVERFLOW);
+                    return 0;
+                }
                 offset += outLen;
 
                 ctx->fullStrLength = offset;
@@ -411,8 +418,6 @@ static const bagl_element_t ui_validator_address_compare[] = {
 };
 
 static unsigned int ui_validator_address_compare_button(unsigned int button_mask, unsigned int button_mask_counter) {
-    uint8_t  numberBuf[32];
-
     switch (button_mask) {
         case BUTTON_LEFT:
         case BUTTON_EVT_FAST | BUTTON_LEFT: // SEEK LEFT
@@ -445,10 +450,15 @@ static unsigned int ui_validator_address_compare_button(unsigned int button_mask
                     UX_DISPLAY(ui_description_compare, NULL);
 
             } else {
+                //re-use hash buf to save stack space
+                uint8_t *numberBuf = &ctx->hash[0];
                 os_memset(numberBuf, 0, 32);
                 os_memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
                           ctx->txContent.value.length);
-                convertU256ToString(numberBuf, (char *) ctx->fullStr, &ctx->fullStrLength);
+                if (convertU256ToString(numberBuf, (char *)ctx->fullStr, 78, &ctx->fullStrLength) == false) {
+                    THROW(EXCEPTION_OVERFLOW);
+                    return 0;
+                }
                 ctx->displayIndex = 0;
                 if (ctx->fullStrLength > 12) {
                     os_memmove(ctx->partialStr, ctx->fullStr, 12);

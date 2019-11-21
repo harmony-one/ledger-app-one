@@ -62,11 +62,9 @@ void mul128(uint128_t *number1, uint128_t *number2, uint128_t *target);
 void mul256(uint256_t *number1, uint256_t *number2, uint256_t *target);
 void divmod128(uint128_t *l, uint128_t *r, uint128_t *div, uint128_t *mod);
 void divmod256(uint256_t *l, uint256_t *r, uint256_t *div, uint256_t *mod);
-bool tostring128(uint128_t *number, uint32_t base, char *out,
-                 uint32_t outLength);
 bool tostring256(uint256_t *number, uint32_t base, char *out,
                  uint32_t outLength, uint32_t *realLength);
-void convertU256ToString(uint8_t *buffer, char *output, uint32_t  *outLength);
+bool convertU256ToString(uint8_t *buffer, char *output, uint32_t sizeLimit, uint32_t  *outLength);
 bool convertNumericDecimalToString(uint8_t *value,  uint8_t length, char *output);
 void to_hex(char * dest, const unsigned char * src, const unsigned int dest_len);
 #endif /* _UINT256_H_ */
