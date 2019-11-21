@@ -627,7 +627,9 @@ bool convertNumericDecimalToString(uint8_t *value,  uint8_t length, char *output
     readu256BE(numberBuf, &target);
 
     os_memset(stringBuf, 0, sizeof(stringBuf));
-    tostring256(&target, 10, stringBuf, 78, &outLen);
+    if (tostring256(&target, 10, stringBuf, 78, &outLen) == false) {
+        return false;
+    }
 
     convertU256ToDecimalString((uint8_t *)stringBuf, outLen, output);
     return true;

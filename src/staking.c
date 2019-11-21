@@ -299,20 +299,29 @@ static unsigned int ui_description_compare_button(unsigned int button_mask, unsi
                 os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
                 os_memmove(ctx->fullStr + offset, "rate:", 5);
                 offset += 5;
-                convertNumericDecimalToString(ctx->txContent.rate.value, ctx->txContent.rate.length, output);
+                if (convertNumericDecimalToString(ctx->txContent.rate.value, ctx->txContent.rate.length, output) == false) {
+                    THROW(EXCEPTION_OVERFLOW);
+                    return 0;
+                }
                 os_memmove(ctx->fullStr + offset , output, strlen(output));
                 offset += strlen(output);
 
                 if (ctx->txContent.directive == DirectiveCreateValidator) {
                     os_memmove(ctx->fullStr + offset, ",max:", 5);
                     offset += 5;
-                    convertNumericDecimalToString(ctx->txContent.maxRate.value, ctx->txContent.maxRate.length, output);
+                    if (convertNumericDecimalToString(ctx->txContent.maxRate.value, ctx->txContent.maxRate.length, output) == false) {
+                        THROW(EXCEPTION_OVERFLOW);
+                        return 0;
+                    }
                     os_memmove(ctx->fullStr + offset , output, strlen(output));
                     offset += strlen(output);
 
                     os_memmove(ctx->fullStr + offset, ",change:", 8);
                     offset += 8;
-                    convertNumericDecimalToString(ctx->txContent.maxChangeRate.value, ctx->txContent.maxChangeRate.length, output);
+                    if (convertNumericDecimalToString(ctx->txContent.maxChangeRate.value, ctx->txContent.maxChangeRate.length, output) == false) {
+                        THROW(EXCEPTION_OVERFLOW);
+                        return 0;
+                    }
                     os_memmove(ctx->fullStr + offset , output, strlen(output));
                     offset += strlen(output);
                 }
