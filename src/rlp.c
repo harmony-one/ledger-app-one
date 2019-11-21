@@ -734,7 +734,7 @@ int processStaking(struct txContext_t *context) {
             case STAKE_RLP_SLOTKEYTOREMOVE:
                 os_memmove(context->content->blsKeyStr, "remove:", 7);
                 processBlsPubKey(context,  (uint8_t *)context->content->blsPubKey);
-                to_hex(context->content->blsKeyStr + 7, (unsigned char *)context->content->blsPubKey, 10);
+                to_hex((char *)context->content->blsKeyStr + 7, (unsigned char *)context->content->blsPubKey, 10);
                 context->content->blsKeyStr[17] = '.';
                 context->content->blsKeyStr[18] = '.';
                 context->content->blsKeyStr[19] = '.';
@@ -742,7 +742,7 @@ int processStaking(struct txContext_t *context) {
             case STAKE_RLP_SLOTKEYTOADD:
                 os_memmove(context->content->blsKeyStr + 20, ",add:", 5);
                 processBlsPubKey(context,  (uint8_t *)context->content->blsPubKey);
-                to_hex(context->content->blsKeyStr + 25, (unsigned char *)context->content->blsPubKey, 10);
+                to_hex((char *)context->content->blsKeyStr + 25, (unsigned char *)context->content->blsPubKey, 10);
                 context->content->blsKeyStr[35] = '.';
                 context->content->blsKeyStr[36] = '.';
                 context->content->blsKeyStr[37] = '.';

@@ -10,7 +10,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="769ad05e-1c8a-460e-9950-30c64925c3db" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/getPublicKey.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/getPublicKey.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/getTxnSig.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/getTxnSig.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/harmony.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/harmony.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rlp.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/rlp.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/staking.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/staking.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/uint256.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/uint256.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/uint256.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/uint256.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ux.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ux.h" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,146 +29,12 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/getPublicKey.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" selection-start-line="21" selection-end-line="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/getTxnSig.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" selection-start-line="21" selection-end-line="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/harmony.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="20" selection-end-column="3" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="45">
-                <caret line="3" column="52" selection-start-line="3" selection-start-column="52" selection-end-line="3" selection-end-column="52" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/glyphs.c">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="16" selection-end-column="81" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/rlp.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5370">
-              <caret line="358" column="9" selection-start-line="358" selection-start-column="9" selection-end-line="358" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/uint256.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6795">
-              <caret line="453" column="14" selection-start-line="453" selection-start-column="5" selection-end-line="453" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ux.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" selection-start-line="21" selection-end-line="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/getVersion.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" selection-start-line="21" selection-end-line="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Go File" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>ctx</find>
-      <find>42</find>
-      <find>handleCalcTxnHash</find>
-      <find>Amount</find>
-      <find>indexStr</find>
-      <find>sia_main</find>
-      <find>ui_signHash_compare</find>
-      <find>calcTxnHashContext</find>
-      <find>MAX_ADDRESS</find>
-      <find>fullSize</find>
-      <find>os_memset</find>
-      <find>builtBy</find>
-      <find>bls</find>
-      <find>keystore</find>
-      <find>clientService</find>
-      <find>DEBUG</find>
-      <find>OpenNanoS</find>
-      <find>ConvertAndEncode</find>
-      <find>processBalancesCommand</find>
-      <find>listCommand</find>
-      <find>ConvertBalanceIntoReadableFormat</find>
-      <find>convertBalanceIntoReadableFormat</find>
-      <find>GetAddress</find>
-      <find>default</find>
-      <find>walletProfile</find>
-      <find>signHashCmd</find>
-      <find>hash</find>
-      <find>divmod256</find>
-      <find>Sia</find>
-      <find>ui_getPublicKey_approve_button</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>one_main</replace>
-      <replace>address</replace>
-      <replace>cmdSignTx</replace>
-      <replace>signTxnContext</replace>
-      <replace>One</replace>
-    </replaceStrings>
   </component>
   <component name="GOROOT" path="/usr/local/go" />
   <component name="Git.Settings">
@@ -169,60 +43,7 @@
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/src/base32.c" />
-        <option value="$PROJECT_DIR$/src/rlp.h" />
-        <option value="$PROJECT_DIR$/src/rlp.c" />
-        <option value="$PROJECT_DIR$/src/getHashSig.c" />
-        <option value="$PROJECT_DIR$/wallet.go" />
-        <option value="$PROJECT_DIR$/usb.go" />
-        <option value="$PROJECT_DIR$/walletprofile.go" />
-        <option value="$PROJECT_DIR$/hwwallet.go" />
-        <option value="$PROJECT_DIR$/src/main.c" />
-        <option value="$PROJECT_DIR$/oneledger.go" />
-        <option value="$PROJECT_DIR$/src/harmony.c" />
-        <option value="$PROJECT_DIR$/src/harmony.h" />
-        <option value="$PROJECT_DIR$/src/ux.h" />
-        <option value="$PROJECT_DIR$/src/getVersion.c" />
-        <option value="$PROJECT_DIR$/src/getTxnSig.c" />
-        <option value="$PROJECT_DIR$/src/getPublicKey.c" />
-        <option value="$PROJECT_DIR$/README.md" />
-      </list>
-    </option>
-  </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds">
-    <option name="x" value="632" />
-    <option name="y" value="106" />
-    <option name="width" value="2781" />
-    <option name="height" value="1306" />
-  </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="ledger-app-one" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ledger-app-one" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ledger-app-one" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ledger-app-one" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
   <component name="PropertiesComponent">
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -275,219 +96,7 @@
     </task>
     <servers />
   </component>
-  <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="36686000" />
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="632" y="106" width="2781" height="1306" extended-state="0" />
-    <editor active="true" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18976234" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49660948" weight="0.19234116" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49740726" weight="0.33420366" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5033905" side_tool="true" weight="0.30926085" />
-      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" />
-    </layout>
-    <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1868373" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49660948" weight="0.19234116" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49740726" weight="0.33420366" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Terminal" order="9" />
-      <window_info active="true" anchor="bottom" id="Event Log" order="10" sideWeight="0.5033905" side_tool="true" visible="true" weight="0.30926085" />
-      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" />
-    </layout-to-restore>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/bech32.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="22" selection-start-line="12" selection-start-column="4" selection-end-line="12" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/bech32.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="526">
-          <caret line="52" column="8" selection-start-line="52" selection-start-column="8" selection-end-line="52" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/go/pkg/mod/github.com/harmony-one/bls@v0.0.5/ffi/go/bls/bls.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="9" selection-start-line="7" selection-start-column="9" selection-end-line="7" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/go.mod">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/go/src/runtime/proc.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="154" selection-start-line="154" selection-end-line="154" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/go/src/runtime/asm_amd64.s">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="518" selection-start-line="518" selection-end-line="518" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/go/src/runtime/panic.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="689" selection-start-line="689" selection-end-line="689" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/usb.go" />
-    <entry file="file://$PROJECT_DIR$/configfile.go" />
-    <entry file="file://$PROJECT_DIR$/hwwallet.go" />
-    <entry file="file://$PROJECT_DIR$/src/getHashSig.c" />
-    <entry file="file://$PROJECT_DIR$/src/rlp.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="662">
-          <caret line="45" column="25" selection-start-line="45" selection-start-column="25" selection-end-line="45" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/oneledger.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5910">
-          <caret line="394" selection-start-line="394" selection-end-line="394" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/harmony.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/base32.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" column="12" lean-forward="true" selection-start-line="31" selection-start-column="12" selection-end-line="31" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/base32.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/glyphs.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/glyphs.c">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="16" selection-end-column="81" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/rlp.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5370">
-          <caret line="358" column="9" selection-start-line="358" selection-start-column="9" selection-end-line="358" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/uint256.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6795">
-          <caret line="453" column="14" selection-start-line="453" selection-start-column="5" selection-end-line="453" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/harmony.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="20" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ux.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/getVersion.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/getTxnSig.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/getPublicKey.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="2" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="45">
-            <caret line="3" column="52" selection-start-line="3" selection-start-column="52" selection-end-line="3" selection-end-column="52" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>
