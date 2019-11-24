@@ -254,7 +254,7 @@ func (n *NanoS) SignTxn(txn []byte) (sig [65]byte, err error) {
 func OpenNanoS() (*NanoS, error) {
 	const (
 		ledgerVendorID       = 0x2c97
-		ledgerNanoSProductID = 0x0001
+		ledgerNanoSProductID = 0x1011
 		//ledgerUsageID        = 0xffa0
 	)
 
