@@ -20,6 +20,9 @@ An example of Ledger Nano S running Harmony ONE app (LED UI) and companion app m
 In order to make compiling as early as possible you can make use of a docker image containing all the necessary compilers and the [nanos-secure-sdk](https://github.com/LedgerHQ/nanos-secure-sdk).
 
 Make sure you have [Docker](https://www.docker.com/community-edition) installed.
+#### Step 0 - Updated your ledger NanoS firmware to version 1.6.0
+https://support.ledger.com/hc/en-us/articles/360002731113-Update-device-firmware
+
 
 #### Step 1 - Build the image:
 ```bash
