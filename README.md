@@ -24,18 +24,22 @@ Make sure you have [Docker](https://www.docker.com/community-edition) installed.
 https://support.ledger.com/hc/en-us/articles/360002731113-Update-device-firmware
 
 
-#### Step 1 - Build the image:
+#### Step 1 - Pull docker image from docker.io:
+
+```bash
+docker pull coolcottontail/harmony:ledger-chain
+```
+
+Just in case pull doesn't work, you can build docker image from scratch locally using :
+
 ```bash
 docker build -t ledger-chain:latest .
 ```
+
 The `.` at the end is **important!**
 
 or you can pull the image from docker.io
 
-```bash
-docker pull coolcottontail/harmony:ledger-one
-docker tag ledger-chain  coolcottontail/harmony:ledger-one
-```
  
 #### Step 2 - Use Docker image
 ```bash
