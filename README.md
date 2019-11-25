@@ -102,7 +102,7 @@ This step requires sudo permission
 
 this bash actually execute the following:
 ```bash
-sudo ./venv/bin/python -m ledgerblue.loadApp --appFlags 0x40 --path 44/1023  --curve secp256k1 --tlv --targetId 0x31100004 --delete --fileName bin/app.hex --appName One --appVersion 0.0.1 --dataSize 0 --icon 01ffffff00ffffff00ffffffffffffc7e1bbcdbbddbbcdbbc50bd8a3ddbbddbbddb3edc7e3ffffffff
+sudo ./venv/bin/python -m ledgerblue.loadApp --appFlags 0x40 --path 44/1023  --curve secp256k1 --tlv --targetId 0x31100004 --delete --fileName release/ver1_app.hex --appName One --appVersion 0.0.1 --dataSize 0 --icon 01ffffff00ffffff00ffffffffffffc7e1bbcdbbddbbcdbbc50bd8a3ddbbddbbddb3edc7e3ffffffff
 ```
 
 
