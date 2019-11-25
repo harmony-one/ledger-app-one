@@ -30,6 +30,7 @@ https://support.ledger.com/hc/en-us/articles/360002731113-Update-device-firmware
 docker pull coolcottontail/harmony:ledger-chain
 ```
 Go to Step 2 if you can pull the image succesfully. 
+
 Otherwise, you can build docker image from scratch locally using :
 
 ```bash
@@ -37,8 +38,6 @@ docker build -t ledger-chain:latest .
 ```
 
 The `.` at the end is **important!**
-
-or you can pull the image from docker.io
 
  
 #### Step 2 - Use Docker image
