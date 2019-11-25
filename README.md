@@ -42,14 +42,18 @@ or you can pull the image from docker.io
 
  
 #### Step 2 - Use Docker image
+if you pull the image from docker.io, then use the following command:
+```bash
+docker run --rm -v "$(pwd)":/one-ledger -w /one-ledger coolcottontail/harmony:ledger-chain make
+```
+
+if you build image locally, then use the following command:
 ```bash
 docker run --rm -v "$(pwd)":/one-ledger -w /one-ledger ledger-chain make
 ```
 
-### Build
-```bash
-make
-```
+After the build, the firmware created as bin/app.hex 
+
 
 
 ## Load app onto Ledger Nano S
@@ -79,19 +83,22 @@ or pip install git+https://github.com/LedgerHQ/blue-loader-python.git
 
 If you run into errors here, make sure you have the required dependencies installed. See [Ledger - Loader Python](https://github.com/LedgerHQ/blue-loader-python).
 
+This step will create a directory venv and put all python related modules there.
+
 #### Step 3 - Load HEX file
 This step requires sudo permission
 ```bash
 ./load_fw.sh
 ```
 
-#### Step 4 - Leave virtualenv
-To get out of your Python virtualenv again after everything is done.
-```bash
-deactivate
+this bash actually execute the following:
+``bash
+sudo ./venv/bin/python -m ledgerblue.loadApp --appFlags 0x40 --path 44/1023  --curve secp256k1 --tlv --targetId 0x31100004 --delete --fileName bin/app.hex --appName One --appVersion 0.0.1 --dataSize 0 --icon 01ffffff00ffffff00ffffffffffffc7e1bbcdbbddbbcdbbc50bd8a3ddbbddbbddb3edc7e3ffffffff
 ```
 
+
 ## Build host companion app
+This is only for testing the ledger firmware. If you use javascript, then don't need to do this step.
 ```
 go build oneledger.go
 ```
