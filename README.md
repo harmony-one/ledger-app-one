@@ -14,7 +14,10 @@ An example of Ledger Nano S running Harmony ONE app (LED UI) and companion app m
   glyphs/        icon files used in firmware GUI
 ```
 
-## Build Environment
+
+## Build firmware yourself
+
+You can skip this docker and make step if you don't want to build firmware app yourself. You can directly use the pre-build image under release/ver1_app.hex and run install_release.sh. Please see the section "Install the Pre-Build release version".
 
 ### Docker toolchain image
 In order to make compiling as early as possible you can make use of a docker image containing all the necessary compilers and the [nanos-secure-sdk](https://github.com/LedgerHQ/nanos-secure-sdk).
@@ -53,6 +56,13 @@ docker run --rm -v "$(pwd)":/one-ledger -w /one-ledger ledger-chain make
 
 After the build, the firmware created as bin/app.hex 
 
+## Install the Pre-Build release version 
+
+after checkout the code from github and upgrade Ledger Nano S firmware to version 1.6.0, you can directly install the pre-build firmware using the following.
+
+```bash
+sudo ./venv/bin/python -m ledgerblue.loadApp --appFlags 0x40 --path 44/1023  --curve secp256k1 --tlv --targetId 0x31100004 --delete --fileName bin/app.hex --appName One --appVersion 0.0.1 --dataSize 0 --icon 01ffffff00ffffff00ffffffffffffc7e1bbcdbbddbbcdbbc50bd8a3ddbbddbbddb3edc7e3ffffffff
+```
 
 
 ## Load app onto Ledger Nano S
