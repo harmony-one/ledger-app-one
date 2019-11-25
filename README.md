@@ -29,8 +29,8 @@ https://support.ledger.com/hc/en-us/articles/360002731113-Update-device-firmware
 ```bash
 docker pull coolcottontail/harmony:ledger-chain
 ```
-
-Just in case pull doesn't work, you can build docker image from scratch locally using :
+Go to Step 2 if you can pull the image succesfully. 
+Otherwise, you can build docker image from scratch locally using :
 
 ```bash
 docker build -t ledger-chain:latest .
