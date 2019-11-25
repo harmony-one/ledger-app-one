@@ -32,8 +32,9 @@ The `.` at the end is **important!**
 
 or you can pull the image from docker.io
 
+```bash
 docker pull coolcottontail/harmony:ledger-one
-
+```
  
 #### Step 2 - Use Docker image
 ```bash
