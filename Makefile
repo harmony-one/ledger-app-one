@@ -24,7 +24,7 @@ include $(BOLOS_SDK)/Makefile.defines
 #  App  #
 #########
 
-APPNAME    = One
+APPNAME    = "Harmony One"
 ICONNAME   = nanos_app_one.gif
 APPVERSION = 1.0.0
 
@@ -70,7 +70,7 @@ endif
 ##############
 
 CC := $(CLANGPATH)clang
-CFLAGS += -O3 -Os
+CFLAGS += -O3 -Os -I/usr/include
 
 AS := $(GCCPATH)arm-none-eabi-gcc
 LD := $(GCCPATH)arm-none-eabi-gcc
@@ -89,4 +89,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN one
+	@echo VARIANTS COIN harmony_one

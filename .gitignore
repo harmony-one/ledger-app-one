@@ -6,3 +6,5 @@ debug
 hw_wallet
 oneledger
 venv
+src/glyphs.c
+src/glyphs.h
