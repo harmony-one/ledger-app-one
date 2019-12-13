@@ -61,32 +61,16 @@ Make sure you have [Docker](https://www.docker.com/community-edition) installed.
 #### Step 1 - Pull docker image from docker.io:
 
 ```bash
-docker pull coolcottontail/harmony:ledger-chain
-```
-Go to Step 2 if you can pull the image succesfully. 
-
-Otherwise, you can build docker image from scratch locally using :
-
-```bash
-docker build -t ledger-chain:latest .
+docker pull coolcottontail/harmony:ledger-env
 ```
 
-The `.` at the end is **important!**
-
- 
 #### Step 2 - Use Docker image
 if you pull the image from docker.io, then use the following command:
 ```bash
-docker run --rm -v "$(pwd)":/one-ledger -w /one-ledger coolcottontail/harmony:ledger-chain make
-```
-
-if you build image locally, then use the following command:
-```bash
-docker run --rm -v "$(pwd)":/one-ledger -w /one-ledger ledger-chain make
+docker run --rm -v "$(pwd)":/one-ledger -w /one-ledger coolcottontail/harmony:ledger-env make
 ```
 
 After the build, the firmware created as bin/app.hex 
-
 
 ## Load app onto Ledger Nano S
 
@@ -110,9 +94,8 @@ This step requires sudo permission
 
 this bash actually execute the following:
 ```bash
-sudo ./venv/bin/python -m ledgerblue.loadApp --appFlags 0x40 --path 44/1023  --curve secp256k1 --tlv --targetId 0x31100004 --delete --fileName release/ver1_app.hex --appName One --appVersion 0.0.1 --dataSize 0 --icon 01ffffff00ffffff00ffffffffffffc7e1bbcdbbddbbcdbbc50bd8a3ddbbddbbddb3edc7e3ffffffff
+sudo ./venv/bin/python -m ledgerblue.loadApp --appFlags 0x40 --path "44'/1023'" --curve secp256k1 --tlv --targetId 0x31100004 --targetVersion="1.6.0" --delete --fileName bin/app.hex --appName One --appVersion 1.0.0 --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 /opt/bolos/nanos-secure-sdk/icon3.py --hexbitmaponly nanos_app_one.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
 ```
-
 
 ## Build host companion app
 This is only for testing the ledger firmware. If you use javascript, then don't need to do this step.
