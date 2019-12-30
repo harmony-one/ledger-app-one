@@ -1,1 +1,1 @@
-docker run  -it  --rm -v "$(pwd)":/one-ledger -w /one-ledger ledger-chain
+docker run  -it  --rm -v "$(pwd)":/one-ledger -w /one-ledger coolcottontail/harmony:ledger-env /bin/bash

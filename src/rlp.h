@@ -8,11 +8,12 @@
 #define MAX_INT256 32
 #define MAX_ECC_ADDRESS 20
 #define MAX_BLS_ADDRESS 48
+#define MAX_SIG_ADDRESS 96
 #define BLS_KEY_STR_LEN 130
 #define MAX_INT32  4
 
 //max length of staking validator description fields
-#define MAX_NAME_LEN            70
+#define MAX_NAME_LEN            30
 #define MAX_BLS_PUB_KEYS        4
 
 typedef enum rlpTxField_e {
@@ -58,6 +59,9 @@ typedef enum rlpStakingField_e {
     STAKE_RLP_BLSPUBKEY,
     STAKE_RLP_SLOTKEYTOREMOVE,
     STAKE_RLP_SLOTKEYTOADD,
+    STAKE_RLP_BLSSIGS,
+    STAKE_RLP_BLSSIGNATURE,
+    STAKE_RLP_SLOTKEYTOADDSIGNATURE,
     STAKE_RLP_DONE
 } rlpStakingField_e;
 
