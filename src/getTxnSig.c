@@ -32,17 +32,16 @@ SOFTWARE.
 
 static signTxnContext_t *ctx = &global.signTxnContext;
 
-static const bagl_element_t ui_toshard_approve[] = {
+static const bagl_element_t ui_tx_approve[] = {
         UI_BACKGROUND(),
 
         UI_ICON_LEFT(0x00, BAGL_GLYPH_ICON_CROSS),
         UI_ICON_RIGHT(0x00, BAGL_GLYPH_ICON_CHECK),
 
-        UI_TEXT(0x00, 0, 12, 128, "To Shard:"),
-        UI_TEXT(0x00, 0, 26, 128, global.signTxnContext.toShardStr),
+        UI_TEXT(0x00, 0, 12, 128, "Sign Transaction?"),
 };
 
-static unsigned int ui_toshard_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
+static unsigned int ui_tx_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
     cx_sha3_t sha3;
 
     switch (button_mask) {
@@ -74,8 +73,8 @@ static const bagl_element_t ui_fromshard_approve[] = {
         UI_ICON_LEFT(0x00, BAGL_GLYPH_ICON_CROSS),
         UI_ICON_RIGHT(0x00, BAGL_GLYPH_ICON_CHECK),
 
-        UI_TEXT(0x00, 0, 12, 128, "From Shard:"),
-        UI_TEXT(0x00, 0, 26, 128, global.signTxnContext.fromShardStr),
+        UI_TEXT(0x00, 0, 12, 128, "Shard:"),
+        UI_TEXT(0x00, 0, 26, 128, global.signTxnContext.shardStr),
 };
 
 static unsigned int ui_fromshard_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
@@ -87,7 +86,7 @@ static unsigned int ui_fromshard_approve_button(unsigned int button_mask, unsign
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
-            UX_DISPLAY(ui_toshard_approve, NULL);
+            UX_DISPLAY(ui_tx_approve, NULL);
             break;
     }
     return 0;
@@ -114,6 +113,20 @@ static const bagl_element_t* ui_prepro_amount_compare(const bagl_element_t *elem
         default:
             return element;
     }
+}
+
+static void assign_shard_string() {
+    uint8_t shardStr[5];
+    int shardStrlen;
+
+    strncpy((char*)&ctx->shardStr[0], "from:", 5);
+    memset(shardStr, 0, sizeof(shardStr));
+    shardStrlen = bin2dec(shardStr, ctx->txContent.fromShard);
+    strncpy((char*)&ctx->shardStr[5], shardStr, shardStrlen);
+    strncpy((char*)&ctx->shardStr[5 + shardStrlen], " to:", 4);
+    memset(shardStr, 0, sizeof(shardStr));
+    bin2dec(shardStr, ctx->txContent.toShard);
+    strncpy((char*)&ctx->shardStr[9 + shardStrlen], shardStr, sizeof(shardStr));
 }
 
 // This is the button handler for the comparison screen. Unlike the approval
@@ -151,8 +164,7 @@ static unsigned int ui_amount_compare_large_button(unsigned int button_mask, uns
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            bin2dec(ctx->fromShardStr, ctx->txContent.fromShard);
-            bin2dec(ctx->toShardStr, ctx->txContent.toShard);
+            assign_shard_string();
             UX_DISPLAY(ui_fromshard_approve, NULL);
             break;
     }
@@ -180,8 +192,7 @@ static unsigned int ui_amount_compare_button(unsigned int button_mask, unsigned 
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
-            bin2dec(ctx->fromShardStr, ctx->txContent.fromShard);
-            bin2dec(ctx->toShardStr, ctx->txContent.toShard);
+            assign_shard_string();
             UX_DISPLAY(ui_fromshard_approve, NULL);
             break;
     }
@@ -303,7 +314,7 @@ void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLeng
     ctx->txContext.txCurrentField = TX_RLP_CONTENT;
     ctx->txContext.content = &ctx->txContent;
 
-    os_memmove(ctx->typeStr, "Sign Transaction?", 19);
+    os_memmove(ctx->typeStr, "Review Transaction?", 19);
     UX_DISPLAY(ui_signTx_approve, NULL);
 
     *flags |= IO_ASYNCH_REPLY;
