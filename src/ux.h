@@ -82,8 +82,7 @@ typedef struct {
     uint8_t amountStr[78];
     uint32_t amountLength;
     uint8_t partialAmountStr[13];
-    uint8_t fromShardStr[13];
-    uint8_t toShardStr[13];
+    uint8_t shardStr[13];
     uint8_t hash[32];
     uint8_t fullStr[128]; // variable length
     uint8_t typeStr[40]; // variable-length
