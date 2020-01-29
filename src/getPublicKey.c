@@ -30,6 +30,92 @@ SOFTWARE.
 // Get a pointer to getPublicKey's state variables.
 static getPublicKeyContext_t *ctx = &global.getPublicKeyContext;
 
+static uint16_t getOneAddress() {
+    uint16_t tx = 0;
+    cx_ecfp_public_key_t publicKey;
+
+    deriveOneKeypair(NULL, &publicKey);
+    pubkeyToOneAddress(G_io_apdu_buffer + tx, &publicKey);
+    tx += 42;
+    return tx;
+}
+
+static void getPublicKey() {
+    uint16_t tx = getOneAddress();
+
+    // Flush the APDU buffer, sending the response.
+    io_exchange_with_code(SW_OK, tx);
+}
+
+#if defined(HAVE_UX_FLOW)
+
+
+unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e) {
+    uint16_t tx = 0;
+
+    // Send back the response, do not restart the event loop
+    tx += 42;
+    io_exchange_with_code(SW_OK, tx);
+
+    // Display back the original UX
+    ui_idle();
+    return 0; // do not redraw the widget
+}
+
+unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e) {
+
+    // Send back the response, do not restart the event loop
+   // io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
+   io_exchange_with_code(SW_USER_REJECTED, 0);
+
+    // Display back the original UX
+    ui_idle();
+    return 0; // do not redraw the widget
+}
+
+//////////////////////////////////////////////////////////////////////
+UX_FLOW_DEF_NOCB(
+    ux_display_public_flow_1_step,
+    pnn,
+    {
+      &C_icon_eye,
+      "Verify",
+      "address",
+    });
+UX_FLOW_DEF_NOCB(
+    ux_display_public_flow_2_step,
+    bnnn_paging,
+    {
+      .title = "Address",
+      .text = global.getPublicKeyContext.fullStr,
+    });
+UX_FLOW_DEF_VALID(
+    ux_display_public_flow_3_step,
+    pb,
+    io_seproxyhal_touch_address_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Approve",
+    });
+UX_FLOW_DEF_VALID(
+    ux_display_public_flow_4_step,
+    pb,
+    io_seproxyhal_touch_address_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+
+const ux_flow_step_t *        const ux_display_public_flow [] = {
+  &ux_display_public_flow_1_step,
+  &ux_display_public_flow_2_step,
+  &ux_display_public_flow_3_step,
+  &ux_display_public_flow_4_step,
+  FLOW_END_STEP,
+};
+
+#else
+
 // Define the comparison screen. This is where the user will compare the
 // public key (or address) on their device to the one shown on the computer.
 static const bagl_element_t ui_getPublicKey_compare[] = {
@@ -90,21 +176,6 @@ static const bagl_element_t ui_getPublicKey_approve[] = {
 	UI_TEXT(0x00, 0, 12, 128, global.getPublicKeyContext.typeStr),
 };
 
-static void getPublicKey() {
-    uint16_t tx = 0;
-    cx_ecfp_public_key_t publicKey;
-
-    // Derive the public key and address and store them in the APDU
-    // buffer. Even though we know that tx starts at 0, it's best to
-    // always add it explicitly; this prevents a bug if we reorder the
-    // statements later.
-    deriveOneKeypair(NULL, &publicKey);
-
-    pubkeyToOneAddress(G_io_apdu_buffer + tx, &publicKey);
-    tx += 42;
-    // Flush the APDU buffer, sending the response.
-    io_exchange_with_code(SW_OK, tx);
-}
 
 static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
 
@@ -132,6 +203,7 @@ static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, uns
 	}
 	return 0;
 }
+#endif
 
 // These are APDU parameters that control the behavior of the getPublicKey
 // command.
@@ -142,9 +214,16 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t da
     os_memset(ctx, 0, sizeof(getPublicKeyContext_t));
 
     if (p2 == P2_DISPLAY_ADDRESS) {
+#if defined(HAVE_UX_FLOW)
+        int16_t tx = getOneAddress();
+        os_memmove(ctx->fullStr, G_io_apdu_buffer, tx);
+        ctx->fullStr[tx] = '\0';
+        ux_flow_init(0, ux_display_public_flow, NULL);
+#else
         // Prepare the approval screen, filling in the header and body text.
         os_memmove(ctx->typeStr, "Display Address?", 17);
         UX_DISPLAY(ui_getPublicKey_approve, NULL);
+#endif
     }
     else if (p2 == P2_SILENT_MODE) {
         // Return public key without display it in LED

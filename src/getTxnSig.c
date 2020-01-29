@@ -32,6 +32,106 @@ SOFTWARE.
 
 static signTxnContext_t *ctx = &global.signTxnContext;
 
+static void assign_shard_string() {
+    uint8_t shardStr[5];
+    int shardStrlen;
+
+    strncpy((char*)&ctx->shardStr[0], "from:", 5);
+    memset(shardStr, 0, sizeof(shardStr));
+    shardStrlen = bin2dec(shardStr, ctx->txContent.fromShard);
+    strncpy((char*)&ctx->shardStr[5], shardStr, shardStrlen);
+    strncpy((char*)&ctx->shardStr[5 + shardStrlen], " to:", 4);
+    memset(shardStr, 0, sizeof(shardStr));
+    bin2dec(shardStr, ctx->txContent.toShard);
+    strncpy((char*)&ctx->shardStr[9 + shardStrlen], shardStr, sizeof(shardStr));
+}
+
+#if defined(HAVE_UX_FLOW)
+
+unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
+  cx_sha3_t sha3;
+
+  cx_keccak_init(&sha3, 256);
+  cx_hash((cx_hash_t *)&sha3, CX_LAST, ctx->buf, ctx->length, ctx->hash, 32);
+
+  deriveAndSign(G_io_apdu_buffer, ctx->hash);
+  io_exchange_with_code(SW_OK, 65);
+
+  // Return to the main screen.
+  ui_idle();
+  return 0;
+}
+
+unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e) {
+
+    // Send back the response, do not restart the event loop
+   // io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
+   io_exchange_with_code(SW_USER_REJECTED, 0);
+
+    // Display back the original UX
+    ui_idle();
+    return 0; // do not redraw the widget
+}
+
+//////////////////////////////////////////////////////////////////////
+UX_FLOW_DEF_NOCB(ux_approval_tx_1_step,
+    pnn,
+    {
+      &C_icon_eye,
+      "Review",
+      "transaction",
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_tx_2_step,
+    bnnn_paging,
+    {
+      .title = "Amount",
+      .text = global.signTxnContext.amountStr,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_tx_3_step,
+    bnnn_paging,
+    {
+      .title = "Address",
+      .text = global.signTxnContext.toAddr,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_approval_tx_4_step,
+    bnnn_paging,
+    {
+      .title = "Shard",
+      .text = global.signTxnContext.shardStr,
+    });
+UX_FLOW_DEF_VALID(
+    ux_approval_tx_5_step,
+    pbb,
+    io_seproxyhal_touch_tx_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Accept",
+      "and send",
+    });
+UX_FLOW_DEF_VALID(
+    ux_approval_tx_6_step,
+    pb,
+    io_seproxyhal_touch_tx_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+
+const ux_flow_step_t *        const ux_approval_tx_flow [] = {
+  &ux_approval_tx_1_step,
+  &ux_approval_tx_2_step,
+  &ux_approval_tx_3_step,
+  &ux_approval_tx_4_step,
+  &ux_approval_tx_5_step,
+  &ux_approval_tx_6_step,
+  FLOW_END_STEP,
+};
+
+#else
+
 static const bagl_element_t ui_tx_approve[] = {
         UI_BACKGROUND(),
 
@@ -115,19 +215,6 @@ static const bagl_element_t* ui_prepro_amount_compare(const bagl_element_t *elem
     }
 }
 
-static void assign_shard_string() {
-    uint8_t shardStr[5];
-    int shardStrlen;
-
-    strncpy((char*)&ctx->shardStr[0], "from:", 5);
-    memset(shardStr, 0, sizeof(shardStr));
-    shardStrlen = bin2dec(shardStr, ctx->txContent.fromShard);
-    strncpy((char*)&ctx->shardStr[5], shardStr, shardStrlen);
-    strncpy((char*)&ctx->shardStr[5 + shardStrlen], " to:", 4);
-    memset(shardStr, 0, sizeof(shardStr));
-    bin2dec(shardStr, ctx->txContent.toShard);
-    strncpy((char*)&ctx->shardStr[9 + shardStrlen], shardStr, sizeof(shardStr));
-}
 
 // This is the button handler for the comparison screen. Unlike the approval
 // button handler, this handler doesn't send any data to the computer.
@@ -299,6 +386,8 @@ static unsigned int ui_signTx_approve_button(unsigned int button_mask, unsigned 
     return 0;
 }
 
+#endif
+
 void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, volatile unsigned int *flags, volatile unsigned int *tx) {
     os_memset(ctx, 0, sizeof(signTxnContext_t));
 
@@ -314,8 +403,23 @@ void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLeng
     ctx->txContext.txCurrentField = TX_RLP_CONTENT;
     ctx->txContext.content = &ctx->txContent;
 
+#if defined(HAVE_UX_FLOW)
+    uint8_t numberBuf[32];
+    processTx(& ctx->txContext);
+    bech32_get_address((char *)ctx->toAddr, ctx->txContent.destination, 20);
+
+    os_memset(numberBuf, 0, 32);
+    os_memcpy(&numberBuf[32- ctx->txContent.value.length], ctx->txContent.value.value, ctx->txContent.value.length);
+    if ( convertU256ToString(numberBuf, (char *)ctx->amountStr, 78,  &ctx->amountLength) == false) {
+    	THROW(EXCEPTION_OVERFLOW);
+    }
+
+    assign_shard_string();
+    ux_flow_init(0, ux_approval_tx_flow, NULL);
+#else
     os_memmove(ctx->typeStr, "Review Transaction?", 19);
     UX_DISPLAY(ui_signTx_approve, NULL);
+#endif
 
     *flags |= IO_ASYNCH_REPLY;
 }

@@ -23,12 +23,47 @@
 #include "harmony.h"
 #include "ux.h"
 
-
 commandContext global;
+
+#ifdef HAVE_UX_FLOW
+ux_state_t G_ux;
+bolos_ux_params_t G_ux_params;
+
+//////////////////////////////////////////////////////////////////////
+UX_STEP_NOCB(
+    ux_idle_flow_1_step,
+    nn,
+    {
+      "Application",
+      "is ready",
+    });
+UX_STEP_NOCB(
+    ux_idle_flow_2_step,
+    bn,
+    {
+      "Version",
+      APPVERSION,
+    });
+UX_STEP_VALID(
+    ux_idle_flow_3_step,
+    pb,
+    os_sched_exit(-1),
+    {
+      &C_icon_dashboard_x,
+      "Quit",
+    });
+UX_FLOW(ux_idle_flow,
+  &ux_idle_flow_1_step,
+  &ux_idle_flow_2_step,
+  &ux_idle_flow_3_step,
+  FLOW_LOOP
+);
+
+#else 
+
 ux_state_t ux;
 
 static const ux_menu_entry_t menu_main[];
-
 static const ux_menu_entry_t menu_about[] = {
 	{
 		.menu     = NULL,       // another menu entry, displayed when this item is "entered"
@@ -52,9 +87,26 @@ static const ux_menu_entry_t menu_main[] = {
 	UX_MENU_END,
 };
 
+#endif 
+
+// display stepped screens
+unsigned int ux_step_count;
+uint8_t ux_loop_over_curr_element; // Nano S only
 
 void ui_idle(void) {
-	UX_MENU_DISPLAY(0, menu_main, NULL);
+
+    ux_step_count = 0;
+    ux_loop_over_curr_element = 0;
+
+#if defined(HAVE_UX_FLOW)
+    // reserve a display stack slot if none yet
+    if(G_ux.stack_count == 0) {
+        ux_stack_push();
+    }
+    ux_flow_init(0, ux_idle_flow, NULL);
+#else
+    UX_MENU_DISPLAY(0, menu_main, NULL);
+#endif // #if TARGET_ID
 }
 
 // io_exchange_with_code is a helper function for sending response APDUs from
@@ -173,6 +225,9 @@ static void one_main(void) {
 					sw = 0x6800 | (e & 0x7FF);
 					break;
 				}
+		               if (e != 0x9000) {
+                    			flags &= ~IO_ASYNCH_REPLY;
+                		}
 				G_io_apdu_buffer[tx++] = sw >> 8;
 				G_io_apdu_buffer[tx++] = sw & 0xFF;
 			}
