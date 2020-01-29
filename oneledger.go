@@ -255,13 +255,18 @@ func OpenNanoS() (*NanoS, error) {
 	const (
 		ledgerVendorID       = 0x2c97
 		ledgerNanoSProductID = 0x1011
-		//ledgerUsageID        = 0xffa0
+		ledgerNanoXProductID = 0x0004
 	)
 
 	// search for Nano S
 	devices := hid.Enumerate(ledgerVendorID, ledgerNanoSProductID)
 	if len(devices) == 0 {
-		return nil, errors.New("Nano S not detected")
+		devices = hid.Enumerate(ledgerVendorID, ledgerNanoXProductID)
+		if len(devices) == 0 {
+			return nil, errors.New("Ledger Nano S or X not detected")
+		} else if len(devices) > 1 {
+			return nil, errors.New("Unexpected error -- Is the one wallet app running?")
+		}
 	} else if len(devices) > 1 {
 		return nil, errors.New("Unexpected error -- Is the one wallet app running?")
 	}
