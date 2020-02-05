@@ -267,7 +267,7 @@ func OpenNanoS() (*NanoS, error) {
 		if len(devices) == 0 {
 			return nil, errors.New("Ledger Nano S or X not detected")
 		} else if len(devices) > 1 {
-			return nil, errors.New("Unexpected error -- Is the one wallet app running?")
+			return nil, errors.New("Unexpected error -- Is the harmony one wallet app running?")
 		}
 	} else if len(devices) > 1 {
 		return nil, errors.New("Unexpected error -- Is the one wallet app running?")

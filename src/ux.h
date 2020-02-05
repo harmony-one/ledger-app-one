@@ -83,7 +83,7 @@ typedef struct {
     txContext_t txContext;
     txContent_t txContent;
     // NUL-terminated strings for display
-    uint8_t  toAddr[42];
+    uint8_t  toAddr[MAX_ONE_ADDRESS];
     uint8_t partialAddrStr[13];
     //largest 256 bit unsigned integer is 115792089237316195423570985008687907853269984665640564039457584007913129639935
     uint8_t amountStr[78];

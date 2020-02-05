@@ -55,7 +55,7 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
   cx_hash((cx_hash_t *)&sha3, CX_LAST, ctx->buf, ctx->length, ctx->hash, 32);
 
   deriveAndSign(G_io_apdu_buffer, ctx->hash);
-  io_exchange_with_code(SW_OK, 65);
+  io_exchange_with_code(SW_OK, SIGNATURE_LEN);
 
   // Return to the main screen.
   ui_idle();
@@ -158,7 +158,7 @@ static unsigned int ui_tx_approve_button(unsigned int button_mask, unsigned int 
             //os_memmove(G_io_apdu_buffer, ctx->hash, 32);
             //io_exchange_with_code(SW_OK, 32);
             deriveAndSign(G_io_apdu_buffer, ctx->hash);
-            io_exchange_with_code(SW_OK, 65);
+            io_exchange_with_code(SW_OK, SIGNATURE_LEN);
 
             // Return to the main screen.
             ui_idle();

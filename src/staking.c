@@ -40,10 +40,10 @@ static void sign_staking_tx() {
     deriveAndSign(G_io_apdu_buffer, ctx->hash);
 }
 
-#if defined(HAVE_UX_FLOW)
+#if defined(HAVE_UX_FLOW) // UI using Nano X SDK
 unsigned int io_seproxyhal_touch_staking_ok(const bagl_element_t *e) {
     sign_staking_tx();
-    io_exchange_with_code(SW_OK, 65);
+    io_exchange_with_code(SW_OK, SIGNATURE_LEN);
 
     // Display back the original UX
     ui_idle();
@@ -68,7 +68,7 @@ UX_FLOW_DEF_NOCB(
     {
       &C_icon_eye,
       "Verify",
-      "staking",
+      "Staking",
     });
 UX_FLOW_DEF_NOCB(
     ux_staking_flow_2_step,
@@ -187,7 +187,7 @@ const ux_flow_step_t *        const ux_staking_collect_rewards_flow [] = {
   FLOW_END_STEP,
 };
 
-#else
+#else  // UI using ledger Nano S SDK
 static const bagl_element_t ui_confirm_signing[] = {
         UI_BACKGROUND(),
         UI_ICON_LEFT(0x00, BAGL_GLYPH_ICON_CROSS),
@@ -205,7 +205,7 @@ static unsigned int ui_confirm_signing_button(unsigned int button_mask, unsigned
 
         case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
             sign_staking_tx();
-            io_exchange_with_code(SW_OK, 65);
+            io_exchange_with_code(SW_OK, SIGNATURE_LEN);
 
             // Return to the main screen.
             ui_idle();
@@ -706,14 +706,14 @@ static unsigned int ui_signStaking_approve_button(unsigned int button_mask, unsi
             if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
                  (ctx->txContent.directive == DirectiveEditValidator) ) {
                 bech32_get_address((char *)ctx->fullStr, ctx->txContent.validatorAddress, 20);
-                ctx->fullStrLength = 42;
+                ctx->fullStrLength = MAX_ONE_ADDRESS;
                 os_memmove(ctx->partialStr, ctx->fullStr, 12);
                 ctx->partialStr[12] = '\0';
                 ctx->displayIndex = 0;
                 UX_DISPLAY(ui_validator_address_compare, NULL);
             } else {
                 bech32_get_address((char *) ctx->fullStr, ctx->txContent.destination, 20);
-                ctx->fullStrLength = 42;
+                ctx->fullStrLength = MAX_ONE_ADDRESS;
                 os_memmove(ctx->partialStr, ctx->fullStr, 12);
                 ctx->partialStr[12] = '\0';
                 ctx->displayIndex = 0;

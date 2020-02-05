@@ -36,7 +36,7 @@ static uint16_t getOneAddress() {
 
     deriveOneKeypair(NULL, &publicKey);
     pubkeyToOneAddress(G_io_apdu_buffer + tx, &publicKey);
-    tx += 42;
+    tx += MAX_ONE_ADDRESS;
     return tx;
 }
 
@@ -54,7 +54,7 @@ unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e) {
     uint16_t tx = 0;
 
     // Send back the response, do not restart the event loop
-    tx += 42;
+    tx += MAX_ONE_ADDRESS;
     io_exchange_with_code(SW_OK, tx);
 
     // Display back the original UX
@@ -132,7 +132,7 @@ static const bagl_element_t* ui_prepro_getPublicKey_compare(const bagl_element_t
         case 1:
             return (ctx->displayIndex == 0) ? NULL : element;
         case 2:
-            return (ctx->displayIndex >= 42 - 12) ? NULL : element;
+            return (ctx->displayIndex >= MAX_ONE_ADDRESS - 12) ? NULL : element;
         default:
             return element;
     }
@@ -153,7 +153,7 @@ static unsigned int ui_getPublicKey_compare_button(unsigned int button_mask, uns
 
 	case BUTTON_RIGHT:
 	case BUTTON_EVT_FAST | BUTTON_RIGHT: // SEEK RIGHT
-		if (ctx->displayIndex < 42 - 12) {
+		if (ctx->displayIndex < MAX_ONE_ADDRESS - 12) {
 			ctx->displayIndex++;
 		}
 		os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
@@ -190,8 +190,8 @@ static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, uns
 
 		// Prepare the comparison screen, filling in the header and body text.
 		os_memmove(ctx->typeStr, "Compare:", 9);
-		os_memmove(ctx->fullStr, G_io_apdu_buffer, 42);
-		ctx->fullStr[42] = '\0';
+		os_memmove(ctx->fullStr, G_io_apdu_buffer, MAX_ONE_ADDRESS);
+		ctx->fullStr[MAX_ONE_ADDRESS] = '\0';
 
 		os_memmove(ctx->partialStr, ctx->fullStr, 12);
 		ctx->partialStr[12] = '\0';
