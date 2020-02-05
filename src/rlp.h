@@ -9,6 +9,7 @@
 #define MAX_ECC_ADDRESS 20
 #define MAX_BLS_ADDRESS 48
 #define MAX_SIG_ADDRESS 96
+#define MAX_ONE_ADDRESS 42
 #define BLS_KEY_STR_LEN 130
 #define MAX_INT32  4
 

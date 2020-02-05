@@ -31,6 +31,9 @@ SOFTWARE.
 #define U8BE(buf, off) (((uint64_t)(U4BE(buf, off))     << 32) | ((uint64_t)(U4BE(buf, off + 4)) & 0xFFFFFFFF))
 #define U8LE(buf, off) (((uint64_t)(U4LE(buf, off + 4)) << 32) | ((uint64_t)(U4LE(buf, off))     & 0xFFFFFFFF))
 
+// signature length for harmony Tx and Staking Tx
+#define SIGNATURE_LEN  65
+
 // bin2hex converts binary to hex and appends a final NUL byte.
 void bin2hex(uint8_t *dst, uint8_t *data, uint64_t inlen);
 
