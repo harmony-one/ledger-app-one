@@ -79,7 +79,7 @@ UX_FLOW_DEF_NOCB(ux_approval_tx_1_step,
     {
       &C_icon_eye,
       "Review",
-      "transaction",
+      "Transaction",
     });
 UX_FLOW_DEF_NOCB(
     ux_approval_tx_2_step,
