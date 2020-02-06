@@ -24,9 +24,9 @@ include $(BOLOS_SDK)/Makefile.defines
 #  App  #
 #########
 
-APPNAME    = One
+APPNAME    = "Harmony One"
 ICONNAME   = nanos_app_one.gif
-APPVERSION = 1.0.0
+APPVERSION = 1.0.2
 
 # The --path argument here restricts which BIP32 paths the app is allowed to derive.
 APP_LOAD_PARAMS = --appFlags 0x40 --path "44'/1023'" --curve secp256k1 $(COMMON_LOAD_PARAMS)
@@ -88,7 +88,7 @@ endif
 ##############
 
 CC := $(CLANGPATH)clang
-CFLAGS += -O3 -Os
+CFLAGS += -O3 -Os -I/usr/include
 
 AS := $(GCCPATH)arm-none-eabi-gcc
 LD := $(GCCPATH)arm-none-eabi-gcc
@@ -107,4 +107,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN one
+	@echo VARIANTS COIN harmony_one
