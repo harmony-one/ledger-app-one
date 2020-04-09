@@ -692,6 +692,7 @@ static const bagl_element_t ui_signStaking_approve[] = {
         UI_ICON_RIGHT(0x00, BAGL_GLYPH_ICON_CHECK),
 
         UI_TEXT(0x00, 0, 12, 128, global.signStakingContext.partialStr),
+        UI_TEXT(0x00, 0, 26, 128, global.signStakingContext.fullStr),
 };
 
 static unsigned int ui_signStaking_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
@@ -880,6 +881,14 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     if (ctx->txContent.directive == DirectiveCreateValidator) {
     	ux_flow_init(0, ux_staking_create_valiator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveEditValidator)  {
+	    /*
+        if (ctx->txContent.fromShard == 0) {
+        	os_memmove(ctx->partialStr + 15 , " Status:Same", 12 );
+	} else if (ctx->txContent.fromShard == 1) {
+                os_memmove(ctx->partialStr + 15 , " Status:Active", 14);
+	} else {
+                os_memmove(ctx->partialStr + 15 , " Status:Inactive", 16);
+        }*/
     	ux_flow_init(0, ux_staking_edit_validator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveCollectRewards) {
     	ux_flow_init(0, ux_staking_collect_rewards_flow, NULL);
@@ -888,6 +897,12 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     }
 
 #else
+    if (ctx->txContent.directive == DirectiveEditValidator)  {
+	// 15 is size of string "Status:Inactive" 
+        os_memmove(ctx->fullStr, ctx->txContent.destination, 15);
+    } else {
+        os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+    }
     UX_DISPLAY(ui_signStaking_approve, NULL);
 #endif
     *flags |= IO_ASYNCH_REPLY;

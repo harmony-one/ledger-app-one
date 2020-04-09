@@ -536,6 +536,9 @@ int processStaking(struct txContext_t *context) {
                 break;
             case STAKE_RLP_RATE:
                 processDecimal(context);
+		if (context->content->directive == DirectiveEditValidator &&  context->currentFieldLength == 0) {
+                    context->stakeCurrentField = STAKE_RLP_MINSELFDELEGATION;
+                }
                 break;
             case STAKE_RLP_RATE_VALUE:
                 processValue(context, &context->content->rate);
@@ -629,6 +632,17 @@ int processStaking(struct txContext_t *context) {
                 break;
             case STAKE_RLP_SLOTKEYTOADDSIGNATURE:
                 processBlsData(context, NULL);
+                context->stakeCurrentField = STAKE_RLP_EDITACTIVE;
+                break;
+	    case STAKE_RLP_EDITACTIVE:
+                processShard(context, &context->content->fromShard);
+		if (context->content->fromShard == 0) {
+                    os_memmove(context->content->destination, "Status:Same", 11);
+                } else if (context->content->fromShard == 1) {
+                    os_memmove(context->content->destination, "Status:Active", 13);
+                } else {
+                    os_memmove(context->content->destination, "Status:Inactive", 15);
+                }
                 context->stakeCurrentField = STAKE_RLP_DONE;
                 break;
             default:
