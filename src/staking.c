@@ -118,8 +118,8 @@ UX_FLOW_DEF_NOCB(
     ux_staking_flow_8_step,
     bnnn_paging,
     {
-      .title = "Name",
-      .text = global.signStakingContext.txContent.name,
+      .title = "Description",
+      .text = global.signStakingContext.nameStr,
     });
 UX_FLOW_DEF_NOCB(
     ux_staking_flow_9_step,
@@ -141,6 +141,13 @@ UX_FLOW_DEF_NOCB(
     {
       .title = "BlsKey",
       .text = global.signStakingContext.fullStr,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_staking_flow_12_step,
+    bnnn_paging,
+    {
+      .title = "EposStatus",
+      .text = global.signStakingContext.statusStr,
     });
 
 const ux_flow_step_t *        const ux_staking_create_valiator_flow [] = {
@@ -164,6 +171,7 @@ const ux_flow_step_t *        const ux_staking_edit_validator_flow [] = {
   &ux_staking_flow_9_step,
   &ux_staking_flow_10_step,
   &ux_staking_flow_11_step,
+  &ux_staking_flow_12_step,
   &ux_staking_flow_6_step,
   &ux_staking_flow_7_step,
   FLOW_END_STEP,
@@ -785,6 +793,7 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
     if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
     	(ctx->txContent.directive == DirectiveEditValidator) ) {
+
          bech32_get_address((char *)ctx->validatorAddr, ctx->txContent.validatorAddress, 20);
 
 	 char      output[80];
@@ -878,17 +887,22 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
 	 }
     }
 
+    if (strlen(ctx->txContent.name) == 0) {
+        os_memcpy(ctx->nameStr, "null", 4 );
+    } else {
+        os_memcpy(ctx->nameStr, ctx->txContent.name, strlen(ctx->txContent.name));
+    }
+
     if (ctx->txContent.directive == DirectiveCreateValidator) {
     	ux_flow_init(0, ux_staking_create_valiator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveEditValidator)  {
-	    /*
         if (ctx->txContent.fromShard == 0) {
-        	os_memmove(ctx->partialStr + 15 , " Status:Same", 12 );
+                os_memmove(ctx->statusStr, "Same", 4 );
 	} else if (ctx->txContent.fromShard == 1) {
-                os_memmove(ctx->partialStr + 15 , " Status:Active", 14);
+                os_memmove(ctx->statusStr, "Active", 6);
 	} else {
-                os_memmove(ctx->partialStr + 15 , " Status:Inactive", 16);
-        }*/
+                os_memmove(ctx->statusStr, "Inactive", 8);
+        }
     	ux_flow_init(0, ux_staking_edit_validator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveCollectRewards) {
     	ux_flow_init(0, ux_staking_collect_rewards_flow, NULL);
