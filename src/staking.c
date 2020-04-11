@@ -118,8 +118,8 @@ UX_FLOW_DEF_NOCB(
     ux_staking_flow_8_step,
     bnnn_paging,
     {
-      .title = "Name",
-      .text = global.signStakingContext.txContent.name,
+      .title = "Description",
+      .text = global.signStakingContext.nameStr,
     });
 UX_FLOW_DEF_NOCB(
     ux_staking_flow_9_step,
@@ -141,6 +141,13 @@ UX_FLOW_DEF_NOCB(
     {
       .title = "BlsKey",
       .text = global.signStakingContext.fullStr,
+    });
+UX_FLOW_DEF_NOCB(
+    ux_staking_flow_12_step,
+    bnnn_paging,
+    {
+      .title = "EposStatus",
+      .text = global.signStakingContext.statusStr,
     });
 
 const ux_flow_step_t *        const ux_staking_create_valiator_flow [] = {
@@ -164,6 +171,7 @@ const ux_flow_step_t *        const ux_staking_edit_validator_flow [] = {
   &ux_staking_flow_9_step,
   &ux_staking_flow_10_step,
   &ux_staking_flow_11_step,
+  &ux_staking_flow_12_step,
   &ux_staking_flow_6_step,
   &ux_staking_flow_7_step,
   FLOW_END_STEP,
@@ -692,6 +700,7 @@ static const bagl_element_t ui_signStaking_approve[] = {
         UI_ICON_RIGHT(0x00, BAGL_GLYPH_ICON_CHECK),
 
         UI_TEXT(0x00, 0, 12, 128, global.signStakingContext.partialStr),
+        UI_TEXT(0x00, 0, 26, 128, global.signStakingContext.fullStr),
 };
 
 static unsigned int ui_signStaking_approve_button(unsigned int button_mask, unsigned int button_mask_counter) {
@@ -784,6 +793,7 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
     if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
     	(ctx->txContent.directive == DirectiveEditValidator) ) {
+
          bech32_get_address((char *)ctx->validatorAddr, ctx->txContent.validatorAddress, 20);
 
 	 char      output[80];
@@ -877,9 +887,22 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
 	 }
     }
 
+    if (strlen(ctx->txContent.name) == 0) {
+        os_memcpy(ctx->nameStr, "null", 4 );
+    } else {
+        os_memcpy(ctx->nameStr, ctx->txContent.name, strlen(ctx->txContent.name));
+    }
+
     if (ctx->txContent.directive == DirectiveCreateValidator) {
     	ux_flow_init(0, ux_staking_create_valiator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveEditValidator)  {
+        if (ctx->txContent.fromShard == 0) {
+                os_memmove(ctx->statusStr, "Same", 4 );
+	} else if (ctx->txContent.fromShard == 1) {
+                os_memmove(ctx->statusStr, "Active", 6);
+	} else {
+                os_memmove(ctx->statusStr, "Inactive", 8);
+        }
     	ux_flow_init(0, ux_staking_edit_validator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveCollectRewards) {
     	ux_flow_init(0, ux_staking_collect_rewards_flow, NULL);
@@ -888,6 +911,12 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     }
 
 #else
+    if (ctx->txContent.directive == DirectiveEditValidator)  {
+	// 15 is size of string "Status:Inactive" 
+        os_memmove(ctx->fullStr, ctx->txContent.destination, 15);
+    } else {
+        os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+    }
     UX_DISPLAY(ui_signStaking_approve, NULL);
 #endif
     *flags |= IO_ASYNCH_REPLY;

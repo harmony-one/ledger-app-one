@@ -70,6 +70,8 @@ typedef struct {
     uint8_t commissionRateStr[132]; 
     uint8_t delegationStr[132]; 
     uint8_t amountStr[128]; 
+    uint8_t nameStr[30];
+    uint8_t statusStr[30];
 #endif
     uint32_t fullStrLength;
     uint8_t partialStr[18];
@@ -101,8 +103,8 @@ typedef struct {
 typedef union {
 	getPublicKeyContext_t getPublicKeyContext;
 	signHashContext_t     signHashContext;
-    signTxnContext_t      signTxnContext;
-    signStakingContext_t  signStakingContext;
+        signTxnContext_t      signTxnContext;
+        signStakingContext_t  signStakingContext;
 } commandContext;
 extern commandContext global;
 

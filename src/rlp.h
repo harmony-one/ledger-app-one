@@ -63,6 +63,7 @@ typedef enum rlpStakingField_e {
     STAKE_RLP_BLSSIGS,
     STAKE_RLP_BLSSIGNATURE,
     STAKE_RLP_SLOTKEYTOADDSIGNATURE,
+    STAKE_RLP_EDITACTIVE,
     STAKE_RLP_DONE
 } rlpStakingField_e;
 
