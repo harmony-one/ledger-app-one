@@ -54,20 +54,11 @@ If you want to build the firmware from source code yourself, please following th
 ```
 
 ### Docker toolchain image
-In order to make compiling as early as possible you can make use of a docker image containing all the necessary compilers and the [nanos-secure-sdk](https://github.com/LedgerHQ/nanos-secure-sdk).
-
 Make sure you have [Docker](https://www.docker.com/community-edition) installed.
 
-#### Step 1 - Pull docker image from docker.io:
-
-```bash
-docker pull coolcottontail/harmony:ledger-env
 ```
+./run_docker_nanos.sh
 
-#### Step 2 - Use Docker image
-if you pull the image from docker.io, then use the following command:
-```bash
-docker run --rm -v "$(pwd)":/one-ledger -w /one-ledger coolcottontail/harmony:ledger-env make
 ```
 
 After the build, the firmware created as bin/app.hex 
@@ -79,9 +70,6 @@ is connected and the firware is updated to the [latest version](https://support.
 
 Enter your PIN and **make sure you're seeing the Dashboard app**.
 
-
-### Using Docker image
-
 If you run into errors here, make sure you have the required dependencies installed. See [Ledger - Loader Python](https://github.com/LedgerHQ/blue-loader-python).
 
 This step will create a directory venv and put all python related modules there.
@@ -89,13 +77,9 @@ This step will create a directory venv and put all python related modules there.
 #### Step 3 - Load HEX file
 This step requires sudo permission
 ```bash
-./load_fw.sh
+./load_nanos.sh
 ```
 
-this bash actually execute the following:
-```bash
-sudo ./venv/bin/python -m ledgerblue.loadApp --appFlags 0x40 --path "44'/1023'" --curve secp256k1 --tlv --targetId 0x31100004 --targetVersion="1.6.0" --delete --fileName bin/app.hex --appName One --appVersion 1.0.0 --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 /opt/bolos/nanos-secure-sdk/icon3.py --hexbitmaponly nanos_app_one.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
-```
 
 ## Build host companion app
 This is only for testing the ledger firmware. If you use javascript, then don't need to do this step.
