@@ -25,7 +25,7 @@ SOFTWARE.
 #include <os.h>
 #include <os_io_seproxyhal.h>
 #include "harmony.h"
-#include "ux.h"
+#include "ui.h"
 
 // Get a pointer to getPublicKey's state variables.
 static getPublicKeyContext_t *ctx = &global.getPublicKeyContext;

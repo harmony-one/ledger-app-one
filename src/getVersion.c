@@ -25,7 +25,7 @@ SOFTWARE.
 #include <os.h>
 #include <os_io_seproxyhal.h>
 #include "harmony.h"
-#include "ux.h"
+#include "ui.h"
 
 // handleGetVersion is the entry point for the getVersion command. It
 // unconditionally sends the app version.

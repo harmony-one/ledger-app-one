@@ -23,6 +23,8 @@ SOFTWARE.
 // Each command has some state associated with it that sticks around for the
 // life of the command. A separate context_t struct should be defined for each
 // command.
+#include <ux.h>
+
 #include "rlp.h"
 
 // APDU parameters
