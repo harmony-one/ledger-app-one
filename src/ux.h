@@ -80,7 +80,7 @@ typedef struct {
 
 typedef struct {
     uint8_t displayIndex;
-    uint8_t buf[510]; // holds RLP encoded tx bytes; large enough for two 0xFF reads
+    uint8_t buf[1024]; // holds RLP encoded tx bytes; large enough for two 0xFF reads
     uint16_t length;  // holds RLP encoded tx length
     txContext_t txContext;
     txContent_t txContent;

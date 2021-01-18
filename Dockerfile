@@ -14,8 +14,7 @@ RUN dpkg --add-architecture i386
 RUN apt-get update && \
     apt-get -y install libudev-dev libusb-1.0-0-dev && \
     apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 libc6-dev-i386 -y > /dev/null && \
-    apt-get -y install binutils-arm-none-eabi 
-
+    apt-get -y install binutils-arm-none-eabi
 
 # ARM compilers
 ADD install_compiler.sh /tmp/install_compiler.sh
@@ -26,20 +25,16 @@ RUN apt-get update && apt-get -y install python3 python3-pip
 RUN pip3 install -U setuptools ledgerblue pillow
 
 # ENV
-#RUN echo "export BOLOS_SDK=/opt/bolos/nanos-secure-sdk" >> /home/test/.bashrc
-RUN echo "export BOLOS_SDK=/opt/bolos/sdk-nanox-1.2.4-1.5" >> /home/test/.bashrc
+RUN echo "export BOLOS_SDK=/opt/bolos/nanos-secure-sdk" >> /home/test/.bashrc
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 
 ENV BOLOS_ENV=/opt/bolos
-#ENV BOLOS_SDK=$BOLOS_ENV/nanos-secure-sdk
+ENV BOLOS_SDK=$BOLOS_ENV/nanos-secure-sdk
 #ENV BOLOS_SDK=$BOLOS_ENV/blue-secure-sdk
-ENV BOLOS_SDK=$BOLOS_ENV/sdk-nanox-1.2.4-1.5
 
 RUN sudo git clone https://github.com/LedgerHQ/nanos-secure-sdk.git $BOLOS_ENV/nanos-secure-sdk
-#RUN sudo git clone https://github.com/ledgerhq/blue-secure-sdk $BOLOS_ENV/blue-secure-sdk
-COPY sdk-nanox-1.2.4-1.5/ /opt/bolos/sdk-nanox-1.2.4-1.5/
-
+# RUN sudo git clone https://github.com/ledgerhq/blue-secure-sdk $BOLOS_ENV/blue-secure-sdk
 RUN sudo apt-get update && sudo apt-get install -y python3-pip
 
 USER test
