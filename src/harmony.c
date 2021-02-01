@@ -25,7 +25,6 @@ SOFTWARE.
 #include <strings.h>
 #include <stdint.h>
 #include <os.h>
-#include <cx.h>
 #include "harmony.h"
 #include "bech32.h"
 
