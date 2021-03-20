@@ -389,19 +389,35 @@ static unsigned int ui_signTx_approve_button(unsigned int button_mask, unsigned 
 #endif
 
 void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, volatile unsigned int *flags, volatile unsigned int *tx) {
-    os_memset(ctx, 0, sizeof(signTxnContext_t));
+    if (p1 == P1_FIRST) {
+        os_memset(ctx, 0, sizeof(signTxnContext_t));
+        os_memset(& ctx->txContext, 0, sizeof(ctx->txContext));
+        ctx->length = 0;
 
-    //txContext_t txContext;
-    os_memset(& ctx->txContext, 0, sizeof(ctx->txContext));
+        ctx->txContext.workBuffer = ctx->buf;
+        ctx->initialized = true;
+    }
 
-    ctx->length = dataLength;
-    os_memmove(ctx->buf, dataBuffer, dataLength);
+    //maximal 4 cmd buffers
+    if (ctx->length + dataLength > CMD_BUFFER_SIZE * 4) {
+        THROW(EXCEPTION_OVERFLOW);
+        return;
+    }
 
-    ctx->txContext.workBuffer = ctx->buf;
+    // Add the new data to transaction decoder.
+    os_memmove(ctx->buf + ctx->length, dataBuffer, dataLength);
+    ctx->length += dataLength;
+
+    // Get more packets
+    if (p2 != P2_FINISH) {
+        THROW(SW_OK);
+        return;
+    }
+
     ctx->txContext.commandLength = ctx->length;
-
     ctx->txContext.txCurrentField = TX_RLP_CONTENT;
     ctx->txContext.content = &ctx->txContent;
+    ctx->initialized = false;
 
 #if defined(HAVE_UX_FLOW)
     uint8_t numberBuf[32];
