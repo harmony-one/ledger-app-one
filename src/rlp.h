@@ -9,6 +9,7 @@
 #define MAX_ECC_ADDRESS 20
 #define MAX_BLS_ADDRESS 48
 #define MAX_SIG_ADDRESS 96
+#define MAX_ONE_ADDRESS 42
 #define BLS_KEY_STR_LEN 130
 #define MAX_INT32  4
 
@@ -62,6 +63,7 @@ typedef enum rlpStakingField_e {
     STAKE_RLP_BLSSIGS,
     STAKE_RLP_BLSSIGNATURE,
     STAKE_RLP_SLOTKEYTOADDSIGNATURE,
+    STAKE_RLP_EDITACTIVE,
     STAKE_RLP_DONE
 } rlpStakingField_e;
 

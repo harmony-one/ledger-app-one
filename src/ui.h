@@ -54,7 +54,7 @@ typedef struct {
 	uint8_t displayIndex;
 	// NUL-terminated strings for display
 	uint8_t indexStr[40]; // variable-length
-    uint8_t typeStr[40]; // variable-length
+        uint8_t typeStr[40]; // variable-length
 	uint8_t partialHashStr[13];
 } signHashContext_t;
 
@@ -66,6 +66,15 @@ typedef struct {
     txContent_t txContent;
     uint8_t hash[32];
     uint8_t fullStr[132]; // variable length
+#if defined(HAVE_UX_FLOW)
+    uint8_t delegatorAddr[48]; 
+    uint8_t validatorAddr[48]; 
+    uint8_t commissionRateStr[132]; 
+    uint8_t delegationStr[132]; 
+    uint8_t amountStr[128]; 
+    uint8_t nameStr[30];
+    uint8_t statusStr[30];
+#endif
     uint32_t fullStrLength;
     uint8_t partialStr[18];
     bool initialized; // protects against certain attacks
@@ -73,12 +82,12 @@ typedef struct {
 
 typedef struct {
     uint8_t displayIndex;
-    uint8_t buf[510]; // holds RLP encoded tx bytes; large enough for two 0xFF reads
+    uint8_t buf[1024]; // holds RLP encoded tx bytes; large enough for two 0xFF reads
     uint16_t length;  // holds RLP encoded tx length
     txContext_t txContext;
     txContent_t txContent;
     // NUL-terminated strings for display
-    uint8_t  toAddr[42];
+    uint8_t  toAddr[MAX_ONE_ADDRESS];
     uint8_t partialAddrStr[13];
     //largest 256 bit unsigned integer is 115792089237316195423570985008687907853269984665640564039457584007913129639935
     uint8_t amountStr[78];
@@ -96,8 +105,8 @@ typedef struct {
 typedef union {
 	getPublicKeyContext_t getPublicKeyContext;
 	signHashContext_t     signHashContext;
-    signTxnContext_t      signTxnContext;
-    signStakingContext_t  signStakingContext;
+        signTxnContext_t      signTxnContext;
+        signStakingContext_t  signStakingContext;
 } commandContext;
 extern commandContext global;
 

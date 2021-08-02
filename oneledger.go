@@ -187,11 +187,15 @@ const (
 	cmdSignStake    = 0x04
 	cmdSignTx       = 0x08
 
-	p1More  = 0x80
+	p1First         = 0x0
+	p1More          = 0x80
 
 	p2DisplayAddress = 0x00
+	p2SilentMode     = 0x01
 	p2DisplayHash    = 0x00
 	p2SignHash       = 0x01
+	p2Finish         = 0x02
+	// APDU parameters
 )
 
 func (n *NanoS) GetVersion() (version string, err error) {
@@ -220,8 +224,7 @@ func (n *NanoS) GetAddress() (oneAddr string, err error) {
 func (n *NanoS) SignStake(stake []byte) (sig [65]byte, err error) {
 	var resp []byte
 
-	var p1 byte = p1More
-	resp, err = n.Exchange(cmdSignStake, p1, p2SignHash, stake)
+	resp, err = n.Exchange(cmdSignStake, p1First, p2Finish, stake)
 	if err != nil {
 	    return [65]byte{}, err
 	}
@@ -237,8 +240,7 @@ func (n *NanoS) SignStake(stake []byte) (sig [65]byte, err error) {
 func (n *NanoS) SignTxn(txn []byte) (sig [65]byte, err error) {
 	var resp []byte
 
-	var p1 byte = p1More
-	resp, err = n.Exchange(cmdSignTx, p1, p2SignHash, txn)
+	resp, err = n.Exchange(cmdSignTx, p1First, p2Finish, txn)
 	if err != nil {
 	    return [65]byte{}, err
 	}
@@ -255,13 +257,18 @@ func OpenNanoS() (*NanoS, error) {
 	const (
 		ledgerVendorID       = 0x2c97
 		ledgerNanoSProductID = 0x1011
-		//ledgerUsageID        = 0xffa0
+		ledgerNanoXProductID = 0x0004
 	)
 
 	// search for Nano S
 	devices := hid.Enumerate(ledgerVendorID, ledgerNanoSProductID)
 	if len(devices) == 0 {
-		return nil, errors.New("Nano S not detected")
+		devices = hid.Enumerate(ledgerVendorID, ledgerNanoXProductID)
+		if len(devices) == 0 {
+			return nil, errors.New("Ledger Nano S or X not detected")
+		} else if len(devices) > 1 {
+			return nil, errors.New("Unexpected error -- Is the harmony one wallet app running?")
+		}
 	} else if len(devices) > 1 {
 		return nil, errors.New("Unexpected error -- Is the one wallet app running?")
 	}
@@ -299,6 +306,7 @@ const (
 Actions:
     addr            get address of the wallet
     signtx          sign a transaction
+    signstake       sign a staking transaction
 `
 	debugUsage = `print raw APDU exchanges`
 

@@ -53,7 +53,7 @@ void deriveOneKeypair(cx_ecfp_private_key_t *privateKey, cx_ecfp_public_key_t *p
 }
 
 void extractPubkeyBytes(unsigned char *dst, cx_ecfp_public_key_t *publicKey) {
-    os_memmove(dst, publicKey->W, 65);
+    os_memmove(dst, publicKey->W, SIGNATURE_LEN);
 }
 
 
