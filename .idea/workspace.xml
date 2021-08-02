@@ -18,7 +18,7 @@
       <change beforePath="$PROJECT_DIR$/src/staking.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/staking.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/uint256.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/uint256.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/uint256.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/uint256.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ux.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ux.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui.h" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

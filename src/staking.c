@@ -26,7 +26,7 @@ SOFTWARE.
 #include <os.h>
 #include <os_io_seproxyhal.h>
 #include "harmony.h"
-#include "ux.h"
+#include "ui.h"
 #include "rlp.h"
 #include "bech32.h"
 #include "uint256.h"

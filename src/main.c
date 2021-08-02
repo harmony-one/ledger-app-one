@@ -21,7 +21,7 @@
 #include <os_io_seproxyhal.h>
 #include "glyphs.h"
 #include "harmony.h"
-#include "ux.h"
+#include "ui.h"
 
 commandContext global;
 
