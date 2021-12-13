@@ -25,7 +25,7 @@ include $(BOLOS_SDK)/Makefile.defines
 #########
 
 APPNAME    = "Harmony One"
-APPVERSION = 1.6.0
+APPVERSION = 1.6.1
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
         ICONNAME=nanos_app_one.gif
