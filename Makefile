@@ -25,8 +25,13 @@ include $(BOLOS_SDK)/Makefile.defines
 #########
 
 APPNAME    = "Harmony One"
-ICONNAME   = nanos_app_one.gif
 APPVERSION = 1.6.0
+
+ifeq ($(TARGET_NAME),TARGET_NANOS)
+        ICONNAME=nanos_app_one.gif
+else
+        ICONNAME=nanox_app_one.gif
+endif
 
 # The --path argument here restricts which BIP32 paths the app is allowed to derive.
 APP_LOAD_PARAMS = --appFlags 0x40 --path "44'/1023'" --curve secp256k1 $(COMMON_LOAD_PARAMS)
