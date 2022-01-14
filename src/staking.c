@@ -240,7 +240,7 @@ static unsigned int ui_bls_keys_button(unsigned int button_mask, unsigned int bu
             if (ctx->displayIndex > 0) {
                 ctx->displayIndex--;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             // Re-render the screen.
             UX_REDISPLAY();
             break;
@@ -250,7 +250,7 @@ static unsigned int ui_bls_keys_button(unsigned int button_mask, unsigned int bu
             if (ctx->displayIndex < ctx->fullStrLength - 12) {
                 ctx->displayIndex++;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             UX_REDISPLAY();
             break;
 
@@ -282,7 +282,7 @@ static unsigned int ui_delegation_rate_button(unsigned int button_mask, unsigned
             if (ctx->displayIndex > 0) {
                 ctx->displayIndex--;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
             // Re-render the screen.
             UX_REDISPLAY();
             break;
@@ -292,28 +292,28 @@ static unsigned int ui_delegation_rate_button(unsigned int button_mask, unsigned
             if (ctx->displayIndex < ctx->fullStrLength - 12) {
                 ctx->displayIndex++;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
             UX_REDISPLAY();
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+            memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
             if ( ctx->txContent.directive == DirectiveCreateValidator)  {
                 int totalNumOfKeysToDisplay = ctx->txContent.blsPubKeySize;
                 //cap at 10 BLS keys, each key takes 13 bytes
                 if (totalNumOfKeysToDisplay > 10) {
                     totalNumOfKeysToDisplay = 10;
                 }
-                os_memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 13 * totalNumOfKeysToDisplay);
+                memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 13 * totalNumOfKeysToDisplay);
                 offset += 13 * totalNumOfKeysToDisplay;
             } else {
                 //7 + 13 + 5 + 13 = 38 bytes
-                os_memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 38);
+                memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 38);
                 offset += 38;
             }
 
             ctx->fullStrLength = offset;
-            os_memmove(ctx->partialStr, ctx->fullStr, 12);
+            memmove(ctx->partialStr, ctx->fullStr, 12);
             UX_DISPLAY(ui_bls_keys, NULL);
             break;
     }
@@ -340,7 +340,7 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
             if (ctx->displayIndex > 0) {
                 ctx->displayIndex--;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
             // Re-render the screen.
             UX_REDISPLAY();
             break;
@@ -350,7 +350,7 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
             if (ctx->displayIndex < ctx->fullStrLength - 12) {
                 ctx->displayIndex++;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
             UX_REDISPLAY();
             break;
 
@@ -361,13 +361,13 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
                 //re-use hash buf to save stack space
                 uint8_t *numberBuf = &ctx->hash[0];
 
-                os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+                memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
 
                 if (ctx->txContent.directive == DirectiveCreateValidator) {
-                    os_memmove(ctx->fullStr + offset, "amount:", 7);
+                    memmove(ctx->fullStr + offset, "amount:", 7);
                     offset += 7;
-                    os_memset(numberBuf, 0, 32);
-                    os_memmove(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
+                    memset(numberBuf, 0, 32);
+                    memmove(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
                                ctx->txContent.value.length);
                     if (convertU256ToString(numberBuf, (char *)ctx->fullStr + offset, 78, &outLen) == false) {
                         THROW(EXCEPTION_OVERFLOW);
@@ -376,15 +376,15 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
 
                     offset += outLen;
 
-                    os_memmove(ctx->fullStr + offset, ",min:", 5);
+                    memmove(ctx->fullStr + offset, ",min:", 5);
                     offset += 5;
                 } else {
-                    os_memmove(ctx->fullStr + offset, "min:", 4);
+                    memmove(ctx->fullStr + offset, "min:", 4);
                     offset += 4;
                 }
 
-                os_memset(numberBuf, 0, 32);
-                os_memmove(&numberBuf[32 - ctx->txContent.minSelfDelegation.length],
+                memset(numberBuf, 0, 32);
+                memmove(&numberBuf[32 - ctx->txContent.minSelfDelegation.length],
                            ctx->txContent.minSelfDelegation.value, ctx->txContent.minSelfDelegation.length);
                 if (convertU256ToString(numberBuf, (char *)ctx->fullStr + offset, 78, &outLen) == false) {
                     THROW(EXCEPTION_OVERFLOW);
@@ -392,10 +392,10 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
                 }
                 offset += outLen;
 
-                os_memmove(ctx->fullStr + offset, ",max:", 5);
+                memmove(ctx->fullStr + offset, ",max:", 5);
                 offset += 5;
-                os_memset(numberBuf, 0, 32);
-                os_memmove(&numberBuf[32 - ctx->txContent.maxTotalDelegation.length],
+                memset(numberBuf, 0, 32);
+                memmove(&numberBuf[32 - ctx->txContent.maxTotalDelegation.length],
                            ctx->txContent.maxTotalDelegation.value, ctx->txContent.maxTotalDelegation.length);
                 if (convertU256ToString(numberBuf, (char *)ctx->fullStr + offset, 78, &outLen) == false) {
                     THROW(EXCEPTION_OVERFLOW);
@@ -404,7 +404,7 @@ static unsigned int ui_commission_rate_button(unsigned int button_mask, unsigned
                 offset += outLen;
 
                 ctx->fullStrLength = offset;
-                os_memmove(ctx->partialStr, ctx->fullStr, 12);
+                memmove(ctx->partialStr, ctx->fullStr, 12);
                 UX_DISPLAY(ui_delegation_rate, NULL);
             }
             break;
@@ -432,7 +432,7 @@ static unsigned int ui_description_compare_button(unsigned int button_mask, unsi
             if (ctx->displayIndex > 0) {
                 ctx->displayIndex--;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             // Re-render the screen.
             UX_REDISPLAY();
             break;
@@ -442,7 +442,7 @@ static unsigned int ui_description_compare_button(unsigned int button_mask, unsi
             if (ctx->displayIndex < ctx->fullStrLength-12) {
                 ctx->displayIndex++;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             UX_REDISPLAY();
             break;
 
@@ -452,38 +452,38 @@ static unsigned int ui_description_compare_button(unsigned int button_mask, unsi
                 char      output[80];
                 uint32_t  offset = 0;
 
-                os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
-                os_memmove(ctx->fullStr + offset, "rate:", 5);
+                memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+                memmove(ctx->fullStr + offset, "rate:", 5);
                 offset += 5;
                 if (convertNumericDecimalToString(ctx->txContent.rate.value, ctx->txContent.rate.length, output) == false) {
                     THROW(EXCEPTION_OVERFLOW);
                     return 0;
                 }
-                os_memmove(ctx->fullStr + offset , output, strlen(output));
+                memmove(ctx->fullStr + offset , output, strlen(output));
                 offset += strlen(output);
 
                 if (ctx->txContent.directive == DirectiveCreateValidator) {
-                    os_memmove(ctx->fullStr + offset, ",max:", 5);
+                    memmove(ctx->fullStr + offset, ",max:", 5);
                     offset += 5;
                     if (convertNumericDecimalToString(ctx->txContent.maxRate.value, ctx->txContent.maxRate.length, output) == false) {
                         THROW(EXCEPTION_OVERFLOW);
                         return 0;
                     }
-                    os_memmove(ctx->fullStr + offset , output, strlen(output));
+                    memmove(ctx->fullStr + offset , output, strlen(output));
                     offset += strlen(output);
 
-                    os_memmove(ctx->fullStr + offset, ",change:", 8);
+                    memmove(ctx->fullStr + offset, ",change:", 8);
                     offset += 8;
                     if (convertNumericDecimalToString(ctx->txContent.maxChangeRate.value, ctx->txContent.maxChangeRate.length, output) == false) {
                         THROW(EXCEPTION_OVERFLOW);
                         return 0;
                     }
-                    os_memmove(ctx->fullStr + offset , output, strlen(output));
+                    memmove(ctx->fullStr + offset , output, strlen(output));
                     offset += strlen(output);
                 }
 
                 ctx->fullStrLength = offset;
-                os_memmove(ctx->partialStr, ctx->fullStr, 12);
+                memmove(ctx->partialStr, ctx->fullStr, 12);
                 UX_DISPLAY(ui_commission_rate, NULL);
             }
             break;
@@ -515,10 +515,10 @@ static unsigned int ui_amount_compare_large_button(unsigned int button_mask, uns
                 ctx->displayIndex--;
             }
             if (ctx->fullStrLength > 12) {
-                os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
+                memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
             }
             else {
-                os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, ctx->fullStrLength);
+                memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, ctx->fullStrLength);
             }
             // Re-render the screen.
             UX_REDISPLAY();
@@ -530,10 +530,10 @@ static unsigned int ui_amount_compare_large_button(unsigned int button_mask, uns
                 ctx->displayIndex++;
             }
             if (ctx->fullStrLength > 12) {
-                os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
+                memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, 12);
             }
             else {
-                os_memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, ctx->fullStrLength);
+                memmove(ctx->partialStr, ctx->fullStr + ctx->displayIndex, ctx->fullStrLength);
             }
             UX_REDISPLAY();
             break;
@@ -591,7 +591,7 @@ static unsigned int ui_validator_address_compare_button(unsigned int button_mask
                 ctx->displayIndex--;
             }
 
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             // Re-render the screen.
             UX_REDISPLAY();
             break;
@@ -601,24 +601,24 @@ static unsigned int ui_validator_address_compare_button(unsigned int button_mask
             if (ctx->displayIndex < ctx->fullStrLength-12) {
                 ctx->displayIndex++;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             UX_REDISPLAY();
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+            memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
             if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
                  (ctx->txContent.directive == DirectiveEditValidator) ) {
-                    os_memmove(ctx->fullStr, ctx->txContent.name, strlen(ctx->txContent.name));
+                    memmove(ctx->fullStr, ctx->txContent.name, strlen(ctx->txContent.name));
                     ctx->fullStrLength = strlen(ctx->txContent.name);
-                    os_memmove(ctx->partialStr, ctx->fullStr, 12);
+                    memmove(ctx->partialStr, ctx->fullStr, 12);
                     UX_DISPLAY(ui_description_compare, NULL);
 
             } else {
                 //re-use hash buf to save stack space
                 uint8_t *numberBuf = &ctx->hash[0];
-                os_memset(numberBuf, 0, 32);
-                os_memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
+                memset(numberBuf, 0, 32);
+                memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
                           ctx->txContent.value.length);
                 if (convertU256ToString(numberBuf, (char *)ctx->fullStr, 78, &ctx->fullStrLength) == false) {
                     THROW(EXCEPTION_OVERFLOW);
@@ -626,11 +626,11 @@ static unsigned int ui_validator_address_compare_button(unsigned int button_mask
                 }
                 ctx->displayIndex = 0;
                 if (ctx->fullStrLength > 12) {
-                    os_memmove(ctx->partialStr, ctx->fullStr, 12);
+                    memmove(ctx->partialStr, ctx->fullStr, 12);
                     ctx->partialStr[12] = 0;
                     UX_DISPLAY(ui_amount_compare_large, NULL);
                 } else {
-                    os_memmove(ctx->partialStr, ctx->fullStr, ctx->fullStrLength);
+                    memmove(ctx->partialStr, ctx->fullStr, ctx->fullStrLength);
                     ctx->partialStr[ctx->fullStrLength] = 0;
                     UX_DISPLAY(ui_amount_compare, NULL);
                 }
@@ -662,7 +662,7 @@ static unsigned int ui_delegator_address_compare_button(unsigned int button_mask
                 ctx->displayIndex--;
             }
 
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             // Re-render the screen.
             UX_REDISPLAY();
             break;
@@ -672,17 +672,17 @@ static unsigned int ui_delegator_address_compare_button(unsigned int button_mask
             if (ctx->displayIndex < ctx->fullStrLength-12) {
                 ctx->displayIndex++;
             }
-            os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+            memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
             UX_REDISPLAY();
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+            memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
             if (ctx->txContent.directive == DirectiveCollectRewards) {
                 UX_DISPLAY(ui_confirm_signing, NULL);
             } else {
                 bech32_get_address((char *) ctx->fullStr, ctx->txContent.validatorAddress, 20);
-                os_memmove(ctx->partialStr, ctx->fullStr, 12);
+                memmove(ctx->partialStr, ctx->fullStr, 12);
                 ctx->partialStr[12] = '\0';
                 ctx->displayIndex = 0;
                 UX_DISPLAY(ui_validator_address_compare, NULL);
@@ -711,19 +711,19 @@ static unsigned int ui_signStaking_approve_button(unsigned int button_mask, unsi
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
-            os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+            memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
             if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
                  (ctx->txContent.directive == DirectiveEditValidator) ) {
                 bech32_get_address((char *)ctx->fullStr, ctx->txContent.validatorAddress, 20);
                 ctx->fullStrLength = MAX_ONE_ADDRESS;
-                os_memmove(ctx->partialStr, ctx->fullStr, 12);
+                memmove(ctx->partialStr, ctx->fullStr, 12);
                 ctx->partialStr[12] = '\0';
                 ctx->displayIndex = 0;
                 UX_DISPLAY(ui_validator_address_compare, NULL);
             } else {
                 bech32_get_address((char *) ctx->fullStr, ctx->txContent.destination, 20);
                 ctx->fullStrLength = MAX_ONE_ADDRESS;
-                os_memmove(ctx->partialStr, ctx->fullStr, 12);
+                memmove(ctx->partialStr, ctx->fullStr, 12);
                 ctx->partialStr[12] = '\0';
                 ctx->displayIndex = 0;
                 UX_DISPLAY(ui_delegator_address_compare, NULL);
@@ -737,8 +737,8 @@ static unsigned int ui_signStaking_approve_button(unsigned int button_mask, unsi
 
 void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, volatile unsigned int *flags, volatile unsigned int *tx) {
     if (p1 == P1_FIRST) {
-        os_memset(ctx, 0, sizeof(signStakingContext_t));
-        os_memset(& ctx->txContext, 0, sizeof(ctx->txContext));
+        memset(ctx, 0, sizeof(signStakingContext_t));
+        memset(& ctx->txContext, 0, sizeof(ctx->txContext));
         ctx->length = 0;
 
         ctx->txContext.workBuffer = ctx->buf;
@@ -752,7 +752,7 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     }
 
     // Add the new data to transaction decoder.
-    os_memmove(ctx->buf + ctx->length, dataBuffer, dataLength);
+    memmove(ctx->buf + ctx->length, dataBuffer, dataLength);
     ctx->length += dataLength;
 
     // Get more packets
@@ -771,26 +771,26 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     }
 
     if (ctx->txContent.directive == DirectiveCreateValidator) {
-        os_memmove(ctx->partialStr, "Create Validator", 17);
+        memmove(ctx->partialStr, "Create Validator", 17);
     }
     else if (ctx->txContent.directive == DirectiveEditValidator) {
-        os_memmove(ctx->partialStr, "Edit Validator", 15);
+        memmove(ctx->partialStr, "Edit Validator", 15);
     }
     else if (ctx->txContent.directive == DirectiveDelegate) {
-        os_memmove(ctx->partialStr, "Delegate", 9);
+        memmove(ctx->partialStr, "Delegate", 9);
     }
     else if (ctx->txContent.directive == DirectiveUndelegate) {
-        os_memmove(ctx->partialStr, "Undelegate", 11);
+        memmove(ctx->partialStr, "Undelegate", 11);
     }
     else if (ctx->txContent.directive == DirectiveCollectRewards) {
-        os_memmove(ctx->partialStr, "Collect Rewards", 16);
+        memmove(ctx->partialStr, "Collect Rewards", 16);
     }
     else {
         THROW(INVALID_PARAMETER);
     }
 
 #if defined(HAVE_UX_FLOW)
-    os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+    memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
     if ( (ctx->txContent.directive == DirectiveCreateValidator) ||
     	(ctx->txContent.directive == DirectiveEditValidator) ) {
 
@@ -800,38 +800,38 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
          uint32_t  outLen,offset = 0;
 	 uint8_t   *numberBuf = &ctx->hash[0];
 
-         os_memset(ctx->commissionRateStr, 0, sizeof(ctx->commissionRateStr));
-         os_memmove(ctx->commissionRateStr + offset, "rate:", 5);
+         memset(ctx->commissionRateStr, 0, sizeof(ctx->commissionRateStr));
+         memmove(ctx->commissionRateStr + offset, "rate:", 5);
                
 	 offset += 5;
          if (convertNumericDecimalToString(ctx->txContent.rate.value, ctx->txContent.rate.length, output) == false) {
          	THROW(EXCEPTION_OVERFLOW);
          }
 
-         os_memmove(ctx->commissionRateStr + offset , output, strlen(output));
+         memmove(ctx->commissionRateStr + offset , output, strlen(output));
          offset += strlen(output);
 
 	 if (ctx->txContent.directive == DirectiveCreateValidator) {
 		// process commission rate
-         	os_memmove(ctx->commissionRateStr + offset, ",max:", 5);
+         	memmove(ctx->commissionRateStr + offset, ",max:", 5);
                 offset += 5;
                 if (convertNumericDecimalToString(ctx->txContent.maxRate.value, ctx->txContent.maxRate.length, output) == false) {
                 	THROW(EXCEPTION_OVERFLOW);
                 }
 
-                os_memmove(ctx->commissionRateStr + offset , output, strlen(output));
+                memmove(ctx->commissionRateStr + offset , output, strlen(output));
                 offset += strlen(output);
 
-                os_memmove(ctx->commissionRateStr + offset, ",change:", 8);
+                memmove(ctx->commissionRateStr + offset, ",change:", 8);
                 offset += 8;
                 if (convertNumericDecimalToString(ctx->txContent.maxChangeRate.value, ctx->txContent.maxChangeRate.length, output) == false) {
                 	THROW(EXCEPTION_OVERFLOW);
                 }
-                os_memmove(ctx->commissionRateStr + offset , output, strlen(output));
+                memmove(ctx->commissionRateStr + offset , output, strlen(output));
 
 		// process amount
-         	os_memset(numberBuf, 0, 32);
-         	os_memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
+         	memset(numberBuf, 0, 32);
+         	memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
                           ctx->txContent.value.length);
          	if (convertU256ToString(numberBuf, (char *)ctx->amountStr, 78, &ctx->fullStrLength) == false) {
                	     THROW(EXCEPTION_OVERFLOW);
@@ -839,37 +839,37 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
 	 }
 
          offset = 0;
-         os_memmove(ctx->delegationStr + offset, "min:", 4);
+         memmove(ctx->delegationStr + offset, "min:", 4);
          offset += 4;
 
-         os_memset(numberBuf, 0, 32);
-         os_memmove(&numberBuf[32 - ctx->txContent.minSelfDelegation.length],
+         memset(numberBuf, 0, 32);
+         memmove(&numberBuf[32 - ctx->txContent.minSelfDelegation.length],
                    ctx->txContent.minSelfDelegation.value, ctx->txContent.minSelfDelegation.length);
          if (convertU256ToString(numberBuf, (char *)ctx->delegationStr + offset, 78, &outLen) == false) {
          	THROW(EXCEPTION_OVERFLOW);
          }
 
          offset += outLen;
-         os_memmove(ctx->delegationStr + offset, ",max:", 5);
+         memmove(ctx->delegationStr + offset, ",max:", 5);
          offset += 5;
-         os_memset(numberBuf, 0, 32);
-         os_memmove(&numberBuf[32 - ctx->txContent.maxTotalDelegation.length],
+         memset(numberBuf, 0, 32);
+         memmove(&numberBuf[32 - ctx->txContent.maxTotalDelegation.length],
                    ctx->txContent.maxTotalDelegation.value, ctx->txContent.maxTotalDelegation.length);
          if (convertU256ToString(numberBuf, (char *)ctx->delegationStr + offset, 78, &outLen) == false) {
                    THROW(EXCEPTION_OVERFLOW);
          }
 
-	 os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+	 memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
          if ( ctx->txContent.directive == DirectiveCreateValidator)  {
          	int totalNumOfKeysToDisplay = ctx->txContent.blsPubKeySize;
                 //cap at 10 BLS keys, each key takes 13 bytes
                 if (totalNumOfKeysToDisplay > 10) {
                     totalNumOfKeysToDisplay = 10;
                 }
-                os_memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 13 * totalNumOfKeysToDisplay);
+                memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 13 * totalNumOfKeysToDisplay);
           } else {
                 //7 + 13 + 5 + 13 = 38 bytes
-                os_memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 38);
+                memmove(ctx->fullStr, ctx->txContent.blsKeyStr, 38);
           }
     } else {
          bech32_get_address((char *)ctx->delegatorAddr, ctx->txContent.destination, 20);
@@ -878,8 +878,8 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
          	bech32_get_address((char *)ctx->validatorAddr, ctx->txContent.validatorAddress, 20);
 
 	 	uint8_t *numberBuf = &ctx->hash[0];
-         	os_memset(numberBuf, 0, 32);
-         	os_memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
+         	memset(numberBuf, 0, 32);
+         	memcpy(&numberBuf[32 - ctx->txContent.value.length], ctx->txContent.value.value,
                           ctx->txContent.value.length);
          	if (convertU256ToString(numberBuf, (char *)ctx->amountStr, 78, &ctx->fullStrLength) == false) {
                	     THROW(EXCEPTION_OVERFLOW);
@@ -888,20 +888,20 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
     }
 
     if (strlen(ctx->txContent.name) == 0) {
-        os_memcpy(ctx->nameStr, "null", 4 );
+        memcpy(ctx->nameStr, "null", 4 );
     } else {
-        os_memcpy(ctx->nameStr, ctx->txContent.name, strlen(ctx->txContent.name));
+        memcpy(ctx->nameStr, ctx->txContent.name, strlen(ctx->txContent.name));
     }
 
     if (ctx->txContent.directive == DirectiveCreateValidator) {
     	ux_flow_init(0, ux_staking_create_valiator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveEditValidator)  {
         if (ctx->txContent.fromShard == 0) {
-                os_memmove(ctx->statusStr, "Same", 4 );
+                memmove(ctx->statusStr, "Same", 4 );
 	} else if (ctx->txContent.fromShard == 1) {
-                os_memmove(ctx->statusStr, "Active", 6);
+                memmove(ctx->statusStr, "Active", 6);
 	} else {
-                os_memmove(ctx->statusStr, "Inactive", 8);
+                memmove(ctx->statusStr, "Inactive", 8);
         }
     	ux_flow_init(0, ux_staking_edit_validator_flow, NULL);
     } else if (ctx->txContent.directive == DirectiveCollectRewards) {
@@ -913,9 +913,9 @@ void handleSignStaking(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dat
 #else
     if (ctx->txContent.directive == DirectiveEditValidator)  {
 	// 15 is size of string "Status:Inactive" 
-        os_memmove(ctx->fullStr, ctx->txContent.destination, 15);
+        memmove(ctx->fullStr, ctx->txContent.destination, 15);
     } else {
-        os_memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
+        memset(ctx->fullStr, 0, sizeof(ctx->fullStr));
     }
     UX_DISPLAY(ui_signStaking_approve, NULL);
 #endif

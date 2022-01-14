@@ -155,7 +155,7 @@ static unsigned int ui_tx_approve_button(unsigned int button_mask, unsigned int 
             cx_keccak_init(&sha3, 256);
             cx_hash((cx_hash_t *)&sha3, CX_LAST, ctx->buf, ctx->length, ctx->hash, 32);
             //debug the hash
-            //os_memmove(G_io_apdu_buffer, ctx->hash, 32);
+            //memmove(G_io_apdu_buffer, ctx->hash, 32);
             //io_exchange_with_code(SW_OK, 32);
             deriveAndSign(G_io_apdu_buffer, ctx->hash);
             io_exchange_with_code(SW_OK, SIGNATURE_LEN);
@@ -227,10 +227,10 @@ static unsigned int ui_amount_compare_large_button(unsigned int button_mask, uns
                 ctx->displayIndex--;
             }
             if (ctx->amountLength > 12) {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, 12);
+                memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, 12);
             }
             else {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, ctx->amountLength);
+                memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, ctx->amountLength);
             }
             // Re-render the screen.
             UX_REDISPLAY();
@@ -242,10 +242,10 @@ static unsigned int ui_amount_compare_large_button(unsigned int button_mask, uns
                 ctx->displayIndex++;
             }
             if (ctx->amountLength > 12) {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, 12);
+                memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, 12);
             }
             else {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, ctx->amountLength);
+                memmove(ctx->partialAmountStr, ctx->amountStr + ctx->displayIndex, ctx->amountLength);
             }
             UX_REDISPLAY();
             break;
@@ -319,7 +319,7 @@ static unsigned int ui_address_compare_button(unsigned int button_mask, unsigned
                 ctx->displayIndex--;
             }
 
-            os_memmove(ctx->partialAddrStr, ctx->toAddr+ctx->displayIndex, 12);
+            memmove(ctx->partialAddrStr, ctx->toAddr+ctx->displayIndex, 12);
             // Re-render the screen.
             UX_REDISPLAY();
             break;
@@ -329,25 +329,25 @@ static unsigned int ui_address_compare_button(unsigned int button_mask, unsigned
             if (ctx->displayIndex < sizeof(ctx->toAddr)-12) {
                 ctx->displayIndex++;
             }
-            os_memmove(ctx->partialAddrStr, ctx->toAddr+ctx->displayIndex, 12);
+            memmove(ctx->partialAddrStr, ctx->toAddr+ctx->displayIndex, 12);
             UX_REDISPLAY();
             break;
 
         case BUTTON_EVT_RELEASED | BUTTON_LEFT | BUTTON_RIGHT: // PROCEED
-            os_memset(numberBuf, 0, 32);
-            os_memcpy(&numberBuf[32- ctx->txContent.value.length], ctx->txContent.value.value, ctx->txContent.value.length);
+            memset(numberBuf, 0, 32);
+            memcpy(&numberBuf[32- ctx->txContent.value.length], ctx->txContent.value.value, ctx->txContent.value.length);
             if ( convertU256ToString(numberBuf, (char *)ctx->amountStr, 78,  &ctx->amountLength) == false) {
                 THROW(EXCEPTION_OVERFLOW);
                 return 0;
             }
             ctx->displayIndex = 0;
             if (ctx->amountLength > 12) {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr, 12);
+                memmove(ctx->partialAmountStr, ctx->amountStr, 12);
                 ctx->partialAmountStr[12] = 0;
                 UX_DISPLAY(ui_amount_compare_large, ui_prepro_amount_compare);
             }
             else {
-                os_memmove(ctx->partialAmountStr, ctx->amountStr, ctx->amountLength);
+                memmove(ctx->partialAmountStr, ctx->amountStr, ctx->amountLength);
                 ctx->partialAmountStr[ctx->amountLength] = 0;
                 UX_DISPLAY(ui_amount_compare, NULL);
             }
@@ -377,7 +377,7 @@ static unsigned int ui_signTx_approve_button(unsigned int button_mask, unsigned 
         case BUTTON_EVT_RELEASED | BUTTON_RIGHT: // APPROVE
             processTx(& ctx->txContext);
             bech32_get_address((char *)ctx->toAddr, ctx->txContent.destination, 20);
-            os_memmove(ctx->partialAddrStr, ctx->toAddr, 12);
+            memmove(ctx->partialAddrStr, ctx->toAddr, 12);
             ctx->partialAddrStr[12] = '\0';
             ctx->displayIndex = 0;
             UX_DISPLAY(ui_address_compare, ui_prepro_address_compare);
@@ -390,8 +390,8 @@ static unsigned int ui_signTx_approve_button(unsigned int button_mask, unsigned 
 
 void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, volatile unsigned int *flags, volatile unsigned int *tx) {
     if (p1 == P1_FIRST) {
-        os_memset(ctx, 0, sizeof(signTxnContext_t));
-        os_memset(& ctx->txContext, 0, sizeof(ctx->txContext));
+        memset(ctx, 0, sizeof(signTxnContext_t));
+        memset(& ctx->txContext, 0, sizeof(ctx->txContext));
         ctx->length = 0;
 
         ctx->txContext.workBuffer = ctx->buf;
@@ -405,7 +405,7 @@ void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLeng
     }
 
     // Add the new data to transaction decoder.
-    os_memmove(ctx->buf + ctx->length, dataBuffer, dataLength);
+    memmove(ctx->buf + ctx->length, dataBuffer, dataLength);
     ctx->length += dataLength;
 
     // Get more packets
@@ -424,8 +424,8 @@ void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLeng
     processTx(& ctx->txContext);
     bech32_get_address((char *)ctx->toAddr, ctx->txContent.destination, 20);
 
-    os_memset(numberBuf, 0, 32);
-    os_memcpy(&numberBuf[32- ctx->txContent.value.length], ctx->txContent.value.value, ctx->txContent.value.length);
+    memset(numberBuf, 0, 32);
+    memcpy(&numberBuf[32- ctx->txContent.value.length], ctx->txContent.value.value, ctx->txContent.value.length);
     if ( convertU256ToString(numberBuf, (char *)ctx->amountStr, 78,  &ctx->amountLength) == false) {
     	THROW(EXCEPTION_OVERFLOW);
     }
@@ -433,7 +433,7 @@ void handleSignTx(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLeng
     assign_shard_string();
     ux_flow_init(0, ux_approval_tx_flow, NULL);
 #else
-    os_memmove(ctx->typeStr, "Review Transaction?", 19);
+    memmove(ctx->typeStr, "Review Transaction?", 19);
     UX_DISPLAY(ui_signTx_approve, NULL);
 #endif
 

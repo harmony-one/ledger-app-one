@@ -57,7 +57,7 @@ static void processContent(txContext_t *context) {
 
 void copyTxData(txContext_t *context, uint8_t *out, uint32_t length) {
     if (out != NULL) {
-        os_memmove(out, context->workBuffer, length);
+        memmove(out, context->workBuffer, length);
     }
     context->workBuffer += length;
     context->commandLength -= length;
@@ -512,7 +512,7 @@ int processStaking(struct txContext_t *context) {
                 context->processingField = false;
                 break;
             case STAKE_RLP_NAME:
-                os_memset(context->content->name, 0, MAX_NAME_LEN);
+                memset(context->content->name, 0, MAX_NAME_LEN);
                 processString(context, (uint8_t *)context->content->name, MAX_NAME_LEN);
                 break;
             case STAKE_RLP_IDENTITY:
@@ -610,7 +610,7 @@ int processStaking(struct txContext_t *context) {
                 }
                 break;
             case STAKE_RLP_SLOTKEYTOREMOVE:
-                os_memmove(context->content->blsKeyStr, "remove:", 7);
+                memmove(context->content->blsKeyStr, "remove:", 7);
                 processBlsData(context,  (uint8_t *)context->content->blsPubKey);
                 to_hex((char *)context->content->blsKeyStr + 7, (unsigned char *)context->content->blsPubKey, 10);
                 context->content->blsKeyStr[17] = '.';
@@ -618,7 +618,7 @@ int processStaking(struct txContext_t *context) {
                 context->content->blsKeyStr[19] = '.';
                 break;
             case STAKE_RLP_SLOTKEYTOADD:
-                os_memmove(context->content->blsKeyStr + 20, ",add:", 5);
+                memmove(context->content->blsKeyStr + 20, ",add:", 5);
                 processBlsData(context,  (uint8_t *)context->content->blsPubKey);
                 to_hex((char *)context->content->blsKeyStr + 25, (unsigned char *)context->content->blsPubKey, 10);
                 context->content->blsKeyStr[35] = '.';
@@ -637,11 +637,11 @@ int processStaking(struct txContext_t *context) {
 	    case STAKE_RLP_EDITACTIVE:
                 processShard(context, &context->content->fromShard);
 		if (context->content->fromShard == 0) {
-                    os_memmove(context->content->destination, "Status:Same", 11);
+                    memmove(context->content->destination, "Status:Same", 11);
                 } else if (context->content->fromShard == 1) {
-                    os_memmove(context->content->destination, "Status:Active", 13);
+                    memmove(context->content->destination, "Status:Active", 13);
                 } else {
-                    os_memmove(context->content->destination, "Status:Inactive", 15);
+                    memmove(context->content->destination, "Status:Inactive", 15);
                 }
                 context->stakeCurrentField = STAKE_RLP_DONE;
                 break;

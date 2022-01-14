@@ -53,7 +53,7 @@ void deriveOneKeypair(cx_ecfp_private_key_t *privateKey, cx_ecfp_public_key_t *p
 }
 
 void extractPubkeyBytes(unsigned char *dst, cx_ecfp_public_key_t *publicKey) {
-    os_memmove(dst, publicKey->W, SIGNATURE_LEN);
+    memmove(dst, publicKey->W, SIGNATURE_LEN);
 }
 
 
@@ -67,8 +67,8 @@ void convert_signature_to_RSV(const unsigned char *tlv_signature, unsigned char 
     const int offset_before_R = 4;
     const int offset_before_S = 2;
 
-    os_memmove(dst, tlv_signature + offset_before_R + r_offset, 32); // skip first bytes and store the `R` part
-    os_memmove(dst + 32, tlv_signature + offset_before_R + 32 + offset_before_S + r_offset + s_offset,
+    memmove(dst, tlv_signature + offset_before_R + r_offset, 32); // skip first bytes and store the `R` part
+    memmove(dst + 32, tlv_signature + offset_before_R + 32 + offset_before_S + r_offset + s_offset,
                32); // skip unused bytes and store the `S` part
 }
 
@@ -114,7 +114,7 @@ void getEthAddressFromKey(cx_ecfp_public_key_t *publicKey, uint8_t *out) {
     uint8_t hashAddress[32];
     cx_keccak_init(&sha3Context, 256);
     cx_hash((cx_hash_t*)&sha3Context, CX_LAST, publicKey->W + 1, 64, hashAddress, 32);
-    os_memmove(out, hashAddress + 12, 20);
+    memmove(out, hashAddress + 12, 20);
 }
 
 void pubkeyToOneAddress(uint8_t *dst, cx_ecfp_public_key_t *publicKey) {

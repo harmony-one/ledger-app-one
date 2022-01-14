@@ -147,7 +147,7 @@ static unsigned int ui_getPublicKey_compare_button(unsigned int button_mask, uns
 		if (ctx->displayIndex > 0) {
 			ctx->displayIndex--;
 		}
-		os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+		memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
 		UX_REDISPLAY();
 		break;
 
@@ -156,7 +156,7 @@ static unsigned int ui_getPublicKey_compare_button(unsigned int button_mask, uns
 		if (ctx->displayIndex < MAX_ONE_ADDRESS - 12) {
 			ctx->displayIndex++;
 		}
-		os_memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
+		memmove(ctx->partialStr, ctx->fullStr+ctx->displayIndex, 12);
 		UX_REDISPLAY();
 		break;
 
@@ -189,11 +189,11 @@ static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, uns
         getPublicKey();
 
 		// Prepare the comparison screen, filling in the header and body text.
-		os_memmove(ctx->typeStr, "Compare:", 9);
-		os_memmove(ctx->fullStr, G_io_apdu_buffer, MAX_ONE_ADDRESS);
+		memmove(ctx->typeStr, "Compare:", 9);
+		memmove(ctx->fullStr, G_io_apdu_buffer, MAX_ONE_ADDRESS);
 		ctx->fullStr[MAX_ONE_ADDRESS] = '\0';
 
-		os_memmove(ctx->partialStr, ctx->fullStr, 12);
+		memmove(ctx->partialStr, ctx->fullStr, 12);
 		ctx->partialStr[12] = '\0';
 		ctx->displayIndex = 0;
 
@@ -211,17 +211,17 @@ static unsigned int ui_getPublicKey_approve_button(unsigned int button_mask, uns
 #define P2_SILENT_MODE     0x01
 
 void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, volatile unsigned int *flags, volatile unsigned int *tx) {
-    os_memset(ctx, 0, sizeof(getPublicKeyContext_t));
+    memset(ctx, 0, sizeof(getPublicKeyContext_t));
 
     if (p2 == P2_DISPLAY_ADDRESS) {
 #if defined(HAVE_UX_FLOW)
         int16_t tx = getOneAddress();
-        os_memmove(ctx->fullStr, G_io_apdu_buffer, tx);
+        memmove(ctx->fullStr, G_io_apdu_buffer, tx);
         ctx->fullStr[tx] = '\0';
         ux_flow_init(0, ux_display_public_flow, NULL);
 #else
         // Prepare the approval screen, filling in the header and body text.
-        os_memmove(ctx->typeStr, "Display Address?", 17);
+        memmove(ctx->typeStr, "Display Address?", 17);
         UX_DISPLAY(ui_getPublicKey_approve, NULL);
 #endif
     }

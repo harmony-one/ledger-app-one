@@ -517,18 +517,18 @@ bool convertU256ToString(uint8_t *buffer, char *output, uint32_t sizeLimit, uint
     divmod256(&nanoAmount, &nano, &amount, &rMod);
 
     //78 is the maximal possible length of a uint256 string
-    os_memset(stringBuf, 0, 78);
+    memset(stringBuf, 0, 78);
     if (tostring256(&amount, 10, stringBuf, 78,  &len) == false) {
         return false;
     }
 
-    os_memset(output, 0, sizeLimit);
-    os_memmove(output, stringBuf, len);
+    memset(output, 0, sizeLimit);
+    memmove(output, stringBuf, len);
     *outLength = len;
 
     //check for non zero decimal part
     if (! zero256(&rMod)) {
-        os_memset(stringBuf, 0, 78);
+        memset(stringBuf, 0, 78);
         if (tostring256(&rMod, 10, stringBuf, 78,  &len2) == false) {
             return false;
         }
@@ -557,11 +557,11 @@ bool convertU256ToString(uint8_t *buffer, char *output, uint32_t sizeLimit, uint
         }
 
         //pad leading zeros
-        os_memset(&output[len + 1], '0', 9 - len2);
+        memset(&output[len + 1], '0', 9 - len2);
         *outLength += 9 - len2;
 
         //copy remaining digits
-        os_memcpy(&output[len + 1 + 9 - len2], stringBuf, strlen(stringBuf));
+        memcpy(&output[len + 1 + 9 - len2], stringBuf, strlen(stringBuf));
         *outLength += strlen(stringBuf);
     }
 
@@ -620,13 +620,13 @@ bool convertNumericDecimalToString(uint8_t *value,  uint8_t length, char *output
         return false;
     }
 
-    os_memset(numberBuf, 0, sizeof(numberBuf));
-    os_memmove(&numberBuf[32 - length], value, length);
+    memset(numberBuf, 0, sizeof(numberBuf));
+    memmove(&numberBuf[32 - length], value, length);
 
     clear256(&target);
     readu256BE(numberBuf, &target);
 
-    os_memset(stringBuf, 0, sizeof(stringBuf));
+    memset(stringBuf, 0, sizeof(stringBuf));
     if (tostring256(&target, 10, stringBuf, 78, &outLen) == false) {
         return false;
     }
