@@ -580,8 +580,8 @@ int processStaking(struct txContext_t *context) {
                 break;
             case STAKE_RLP_BLSPUBKEY:
                 processBlsData(context,  (uint8_t *)context->content->blsPubKey);
-                if (context->currentBlsKeyIndex * 13 < BLS_KEY_STR_LEN) {
-                    char *blsPtr = (char *)context->content->blsKeyStr + context->currentBlsKeyIndex * 13;
+                if (context->currentBlsKeyIndex * 13 + 13 < BLS_KEY_STR_LEN) {
+                    char *blsPtr = (char *)&context->content->blsKeyStr[context->currentBlsKeyIndex * 13];
                     to_hex(blsPtr, (unsigned char *)context->content->blsPubKey, 10);
                     blsPtr[10] = '.';
                     blsPtr[11] = '.';
