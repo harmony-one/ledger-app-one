@@ -33,17 +33,9 @@ SOFTWARE.
 static signTxnContext_t *ctx = &global.signTxnContext;
 
 static void assign_shard_string() {
-    uint8_t shardStr[5];
-    int shardStrlen;
-
-    strncpy((char*)&ctx->shardStr[0], "from:", 5);
-    memset(shardStr, 0, sizeof(shardStr));
-    shardStrlen = bin2dec(shardStr, ctx->txContent.fromShard);
-    strncpy((char*)&ctx->shardStr[5], shardStr, shardStrlen);
-    strncpy((char*)&ctx->shardStr[5 + shardStrlen], " to:", 4);
-    memset(shardStr, 0, sizeof(shardStr));
-    bin2dec(shardStr, ctx->txContent.toShard);
-    strncpy((char*)&ctx->shardStr[9 + shardStrlen], shardStr, sizeof(shardStr));
+    snprintf(ctx->shardStr,64, "from:%d to:%d", 
+                        ctx->txContent.fromShard, 
+                        ctx->txContent.toShard);
 }
 
 #if defined(HAVE_UX_FLOW)
