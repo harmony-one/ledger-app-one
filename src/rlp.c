@@ -222,7 +222,7 @@ static void processValue(txContext_t *context, txInt256_t *value) {
 }
 
 
-static void processShard(txContext_t *context, uint8_t *shard) {
+static void processShard(txContext_t *context, uint32_t *shard) {
     if (context->currentFieldPos < context->currentFieldLength) {
         uint32_t copySize =
                 (context->commandLength <
@@ -235,12 +235,13 @@ static void processShard(txContext_t *context, uint8_t *shard) {
 
         //adjust from big endian to little endian
         uint32_t shardId = 0;
-        uint8_t *shardIdArray = (uint8_t *) &context->content->fromShard;
-        for(uint32_t i = 0 ; i < context->currentFieldLength;  i++ ) {
+        uint8_t *shardIdArray = (uint8_t *) shard;
+        for(uint32_t i = 0 ; i < copySize;  i++ ) {
             shardId <<= 8;
             shardId |= shardIdArray[i];
         }
-        context->content->fromShard = shardId;
+
+        *shard = shardId;
     }
     if (context->currentFieldPos == context->currentFieldLength) {
         context->txCurrentField++;
@@ -393,10 +394,10 @@ int processTx(txContext_t *context) {
                 processGas(context, &context->content->startgas);
                 break;
             case TX_RLP_FROMSHARD:
-                processShard(context, (uint8_t *)&context->content->fromShard);
+                processShard(context, &context->content->fromShard);
                 break;
             case TX_RLP_TOSHARD:
-                processShard(context, (uint8_t *)&context->content->toShard);
+                processShard(context, &context->content->toShard);
                 break;
             case TX_RLP_TO:
                 processAddress(context, context->content->destination);
