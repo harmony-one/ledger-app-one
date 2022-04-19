@@ -22,7 +22,8 @@ RUN /tmp/install_compiler.sh
 
 # Python
 RUN apt-get update && apt-get -y install python3 python3-dev python3-pip libjpeg-dev libffi-dev libssl-dev  cython libhidapi-dev
-RUN pip3 install -U setuptools pillow ledgerblue
+RUN pip3 install -U setuptools pillow
+RUN pip3 install ledgerblue
 
 # ENV
 RUN echo "export BOLOS_SDK=/opt/bolos/nanos-secure-sdk" >> /home/test/.bashrc
