@@ -14,19 +14,19 @@ RUN dpkg --add-architecture i386
 RUN apt-get update && \
     apt-get -y install libudev-dev libusb-1.0-0-dev && \
     apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 libc6-dev-i386 -y > /dev/null && \
-    apt-get -y install binutils-arm-none-eabi
+    apt-get -y install binutils-arm-none-eabi  zlib1g zlib1g-dev
 
 # ARM compilers
 ADD install_compiler.sh /tmp/install_compiler.sh
 RUN /tmp/install_compiler.sh
 
 # Python
-RUN apt-get update && apt-get -y install python3 python3-pip
-RUN pip3 install -U setuptools ledgerblue pillow
+RUN apt-get update && apt-get -y install python3 python3-dev python3-pip libjpeg-dev libffi-dev libssl-dev  cython libhidapi-dev
+RUN pip3 install -U setuptools pillow ledgerblue
 
 # ENV
 RUN echo "export BOLOS_SDK=/opt/bolos/nanos-secure-sdk" >> /home/test/.bashrc
-RUN ln -s /usr/bin/python3 /usr/bin/python
+#RUN ln -s /usr/bin/python3 /usr/bin/python
 
 
 ENV BOLOS_ENV=/opt/bolos
